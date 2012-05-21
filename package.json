@@ -1,0 +1,18 @@
+{
+   "name": "kittydar",
+   "description": "Cat detection in images",
+   "version": "0.1.0",
+   "author": "Heather Arthur <fayearthur@gmail.com>",
+   "repository": {
+      "type": "git",
+      "url": "http://github.com/harthur/kittydar.git"
+   },
+   "dependencies" : {
+      "canvas" : ">=0.10.0",
+   },
+   "devDependencies": {
+      "mocha" : ">=1.0.0",
+      "should" : ">=0.6.0",
+   },
+   "main": "./kittydar"
+}
