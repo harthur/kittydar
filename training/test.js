@@ -14,14 +14,32 @@ fs.readdir(dir, function(err, files) {
   })
 
   async.forEach(images, function(file, done) {
-    // open .rect file
+    fs.readFile(file + ".rect", "utf-8", function(text) {
+      var vals = text.split(" ");
+      var rect = {
+        x: vals[0],
+        y: vals[1],
+        width: vals[2],
+        height: vals[3]
+      };
 
-    utils.drawImgToCanvas(file, function(canvas) {
-      var cats = kittydar.detectCats(canvas);
-
-      // test against rect
+      utils.drawImgToCanvas(file, function(canvas) {
+        var cats = kittydar.detectCats(canvas);
+        cats.forEach(function(cat) {
+          if (doesOverlap(cat, rect)) {
+            // true positive
+          }
+          else {
+            // false positive
+          }
+        });
+      });
     })
   });
 });
 
+
+function doesOverlap(rect1, rect2) {
+  if ()
+}
 
