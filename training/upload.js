@@ -2,21 +2,20 @@ var fs = require("fs"),
     path = require("path"),
     async = require("async"),
     cradle = require("cradle"),
-    Canvas = require("canvas"),
-    features = require("./features");
+    utils = require("../utils"),
+    features = require("../features");
 
 var negsDir = __dirname + "/NEGATIVES/";
 var posDir = __dirname + "/POSITIVES/";
 
-var db = new(cradle.Connection)().database('cats-hog');
+var db = new(cradle.Connection)().database('cats-hog-c6-b9');
 
-var limit = 9000;
 var count = 0;
 
-//uploadDir(posDir, 1);
-uploadDir(negsDir, 0);
+//uploadDir(posDir, 1, 5000);
+uploadDir(negsDir, 0, 5000);
 
-function uploadDir(dir, isCat) {
+function uploadDir(dir, isCat, limit) {
   var docs = [];
 
   fs.readdir(dir, function(err, files) {
@@ -26,13 +25,14 @@ function uploadDir(dir, isCat) {
       return path.extname(file) == ".jpg";
     });
 
-    images = images.slice(limit, limit + 1000);
+    images = images.slice(0, limit);
 
     async.forEach(images, function(file, done) {
       file = dir + file;
 
-      // sync for EMFILE "too many open files" error
-      features.extractFeatures(file, function(fts) {
+      utils.drawImgToCanvas(file, function(canvas) {
+        var fts = features.extractFeatures(canvas);
+
         docs.push({
           file: file,
           input: fts,

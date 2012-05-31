@@ -2,7 +2,7 @@ var cradle = require("cradle"),
     brain = require("brain"),
     fs = require("fs");
 
-var db = new(cradle.Connection)().database('cats-hog');
+var db = new(cradle.Connection)().database('cats-hog-c6-b9');
 
 db.all({include_docs: true}, function(err, res) {
   if (err) {
@@ -22,8 +22,8 @@ db.all({include_docs: true}, function(err, res) {
       }
     });
 
-    var posSize = 10000;
-    var negSize = 10000;
+    var posSize = 5000;
+    var negSize = 5000;
     var data = posData.slice(0, posSize).concat(negData.slice(0, negSize));
 
     console.log("training with", data.length);
@@ -33,7 +33,7 @@ db.all({include_docs: true}, function(err, res) {
       hiddenLayers: [40]
     };
     var trainOpts = {
-      errorThresh: 0.005,
+      errorThresh: 0.006,
       log: true
     };
     var stats = brain.crossValidate(brain.NeuralNetwork, data, opts, trainOpts);
@@ -44,7 +44,6 @@ db.all({include_docs: true}, function(err, res) {
       if (err) throw err;
       console.log('saved misclasses');
     });
-
 
     var minError = 1;
     var network;

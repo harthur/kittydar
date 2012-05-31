@@ -1,0 +1,7 @@
+{
+  "cellSize": 6,
+  "blockSize": 2,
+  "blockStride": 1,
+  "bins": 9,
+  "norm": "L2"
+}

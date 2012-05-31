@@ -3,14 +3,6 @@ var url = require("url"),
     http = require("http"),
     Canvas = require("canvas");
 
-exports.zeros = function(size) {
-  var array = new Array(size);
-  for (var i = 0; i < size; i++) {
-    array[i] = 0;
-  }
-  return array;
-}
-
 exports.getCatData = function(file, callback) {
   fs.readFile(file, "utf-8", function(err, data) {
     if (err) throw err;
@@ -34,31 +26,31 @@ exports.getCatData = function(file, callback) {
   })
 }
 
-exports.dataToCanvas = function(imagedata, resize) {
+exports.dataToCanvas = function(imagedata) {
   img = new Canvas.Image();
   img.src = new Buffer(imagedata, 'binary');
 
-  var canvas = new Canvas(resize, resize);
+  var canvas = new Canvas(img.width, img.height);
   var ctx = canvas.getContext('2d');
   ctx.patternQuality = "best";
 
   ctx.drawImage(img, 0, 0, img.width, img.height,
-    0, 0, resize, resize);
+    0, 0, img.width, img.height);
   return canvas;
 }
 
-exports.drawImgToCanvas = function(file, resize, callback) {
+exports.drawImgToCanvas = function(file, callback) {
   fs.readFile(file, function(err, data) {
     if (err) throw err;
-    var canvas = exports.dataToCanvas(data, resize);
+    var canvas = exports.dataToCanvas(data);
 
     callback(canvas);
   });
 }
 
-exports.drawImgToCanvasSync = function(file, resize) {
+exports.drawImgToCanvasSync = function(file) {
   var data = fs.readFileSync(file)
-  var canvas = exports.dataToCanvas(data, resize);
+  var canvas = exports.dataToCanvas(data);
   return canvas;
 }
 
@@ -99,23 +91,13 @@ exports.getImg = function(uri, callback) {
   })
 }
 
-exports.downloadImage = function(uri, dest, callback) {
-  var options = url.parse(uri);
+exports.resizeCanvas = function(canvas, width, height) {
+  var resizeCanvas = new Canvas(width, height);
+  var ctx = resizeCanvas.getContext('2d');
+  ctx.patternQuality = "best";
 
-  var request = http.get(options, function(res){
-    var imagedata = ''
-    res.setEncoding('binary')
+  ctx.drawImage(canvas, 0, 0, canvas.width, canvas.height,
+                0, 0, width, height);
 
-    res.on('data', function(chunk){
-        imagedata += chunk
-    })
-
-    res.on('end', function(){
-      fs.writeFile(dest, imagedata, 'binary', function(err) {
-        if (err) throw err
-        callback();
-      })
-    })
-  })
+  return resizeCanvas;
 }
-
