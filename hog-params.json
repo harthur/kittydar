@@ -1,7 +1,7 @@
 {
-  "cellSize": 6,
+  "cellSize": 4,
   "blockSize": 2,
-  "blockStride": 1,
-  "bins": 9,
+  "blockStride": 2,
+  "bins": 6,
   "norm": "L2"
 }

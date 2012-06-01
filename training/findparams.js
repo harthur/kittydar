@@ -38,21 +38,21 @@ function getCombos() {
 
 var combos = [{
   cellSize: 4,
-  blockSize: 2,
-  blockStride: 1,
+  blockSize: 3,
+  blockStride: 3,
   bins: 6,
   norm: "L2"
 },
 {
   cellSize: 4,
-  blockSize: 2,
+  blockSize: 3,
   blockStride: 2,
   bins: 6,
   norm: "L2"
 },
 {
-  cellSize: 6,
-  blockSize: 2,
+  cellSize: 4,
+  blockSize: 3,
   blockStride: 1,
   bins: 6,
   norm: "L2"
@@ -117,7 +117,7 @@ function testParams(canvases, params) {
   })
 
   var opts = {
-    hiddenLayers: [40]
+    hiddenLayers: [30]
   };
   var trainOpts = {
     errorThresh: 0.006,

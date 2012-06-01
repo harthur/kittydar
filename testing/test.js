@@ -40,6 +40,7 @@ function runTest() {
 
         utils.drawImgToCanvas(file, function(canvas) {
           console.time("detecting")
+          console.log(canvas)
           var info = kittydar.detectCats(canvas);
           var cats = info.cats;
           console.timeEnd("detecting")
@@ -84,17 +85,17 @@ function doesOverlap(cat, rect) {
   var overlapW, overlapH;
 
   if (cat.x > rect.x) {
-    overlapW = (rect.x + rect.width) - cat.x;
+    overlapW = Math.min((rect.x + rect.width) - cat.x, cat.width);
   }
   else {
-    overlapW = (cat.x + cat.width) - rect.x;
+    overlapW = Math.min((cat.x + cat.width) - rect.x, rect.width);
   }
 
   if (cat.y > rect.y) {
-    overlapH = (rect.y + rect.height) - cat.y;
+    overlapH = Math.min((rect.y + rect.height) - cat.y, cat.height);
   }
   else {
-    overlapH = (cat.y + cat.height) - rect.y;
+    overlapH = Math.min((cat.y + cat.height) - rect.y, rect.height);
   }
 
   if (overlapW > 0 && overlapH > 0) {

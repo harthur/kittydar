@@ -8,23 +8,46 @@ var net = new brain.NeuralNetwork().fromJSON(network);
 var threshold = 0.9;
 
 exports.detectCats = function detectCats(canvas) {
-  var found = [];
-  var minScale = 48;
-  var maxScale = Math.min(canvas.width, canvas.height);
+  var width = canvas.width,
+      height = canvas.height;
 
-  var step = 14;
+  // scale to reduce computation time
+  var scale = 360 / Math.max(width, height);
+  width = width * scale;
+  height = height * scale;
+
+  canvas = resizeCanvas(canvas, width, height);
+
+  var min = 48;
+  var max = Math.min(width, height);
+
   var cats = [];
   var total = 0;
-  for (var scale = minScale; scale < maxScale; scale += step) {
-    var info = detectAtScale(canvas, scale, minScale);
+  for (var size = min; size < max; size += 12) {
+    var info = detectAtScale(canvas, size, min);
     cats = cats.concat(info.cats);
     total += info.total;
   }
+  console.log(cats[0])
+  console.log(scale)
+
+  cats = cats.map(function(cat) {
+    return {
+      x: cat.x / scale,
+      y: cat.y / scale,
+      width: cat.width / scale,
+      height: cat.height / scale
+    }
+  });
+
+  console.log(cats[0]);
+
   return {cats: cats, total: total};
 }
 
 function isCat(canvas) {
   var fts = features.extractFeatures(canvas);
+  //console.log(fts.length)
   var prob = net.run(fts)[0];
   return prob;
 }
@@ -47,6 +70,16 @@ function detectAtScale(canvas, scale, resizeTo) {
     }
   }
   return {cats: cats, total: count};
+}
+
+function resizeCanvas(canvas, width, height) {
+  var resizeCanvas = new Canvas(width, height);
+  var ctx = resizeCanvas.getContext('2d');
+  ctx.patternQuality = "best";
+
+  ctx.drawImage(canvas, 0, 0, canvas.width, canvas.height,
+                0, 0, width, height);
+  return resizeCanvas;
 }
 
 function cropAndResize(canvas, x, y, size, resizeTo) {

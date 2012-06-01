@@ -32,21 +32,34 @@ test(r1, r2, true);
 test(r2, r1, true);
 
 
+r1 = {x: 0, y: 0, width: 10, height: 10};
+r2 = {x: 2, y: 2, width: 8, height: 8};
+
+test(r1, r2, true);
+test(r2, r1, true);
+
+r1 = {x: 0, y: 0, width: 10, height: 10};
+r2 = {x: 2, y: 2, width: 1, height: 1};
+
+test(r1, r2, false);
+test(r2, r1, true);
+
+
 function doesOverlap(cat, rect) {
   var overlapW, overlapH;
 
   if (cat.x > rect.x) {
-    overlapW = (rect.x + rect.width) - cat.x;
+    overlapW = Math.min((rect.x + rect.width) - cat.x, cat.width);
   }
   else {
-    overlapW = (cat.x + cat.width) - rect.x;
+    overlapW = Math.min((cat.x + cat.width) - rect.x, rect.width);
   }
 
   if (cat.y > rect.y) {
-    overlapH = (rect.y + rect.height) - cat.y;
+    overlapH = Math.min((rect.y + rect.height) - cat.y, cat.height);
   }
   else {
-    overlapH = (cat.y + cat.height) - rect.y;
+    overlapH = Math.min((cat.y + cat.height) - rect.y, rect.height);
   }
 
   if (overlapW > 0 && overlapH > 0) {
