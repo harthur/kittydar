@@ -36,7 +36,8 @@ exports.detectCats = function detectCats(canvas) {
       x: cat.x / scale,
       y: cat.y / scale,
       width: cat.width / scale,
-      height: cat.height / scale
+      height: cat.height / scale,
+      prob: cat.prob
     }
   });
 
@@ -47,7 +48,6 @@ exports.detectCats = function detectCats(canvas) {
 
 function isCat(canvas) {
   var fts = features.extractFeatures(canvas);
-  //console.log(fts.length)
   var prob = net.run(fts)[0];
   return prob;
 }

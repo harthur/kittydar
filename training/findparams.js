@@ -36,27 +36,50 @@ function getCombos() {
   return combos;
 }
 
-var combos = [{
+var combos = [
+{
   cellSize: 4,
-  blockSize: 3,
-  blockStride: 3,
-  bins: 6,
+  blockSize: 2,
+  blockStride: 1,
+  bins: 9,
   norm: "L2"
 },
 {
   cellSize: 4,
-  blockSize: 3,
+  blockSize: 2,
   blockStride: 2,
-  bins: 6,
+  bins: 9,
   norm: "L2"
 },
 {
   cellSize: 4,
-  blockSize: 3,
+  blockSize: 2,
   blockStride: 1,
   bins: 6,
   norm: "L2"
-}];
+},
+{
+  cellSize: 4,
+  blockSize: 2,
+  blockStride: 1,
+  bins: 7,
+  norm: "L2"
+},
+{
+  cellSize: 6,
+  blockSize: 2,
+  blockStride: 1,
+  bins: 9,
+  norm: "L2"
+},
+{
+  cellSize: 6,
+  blockSize: 2,
+  blockStride: 1,
+  bins: 6,
+  norm: "L2"
+}
+];
 
 console.log("testing", combos.length, "combinations");
 

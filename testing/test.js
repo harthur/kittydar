@@ -3,6 +3,7 @@ var brain = require("brain"),
     path = require("path"),
     async = require("async"),
     utils = require("../utils"),
+    Canvas = require("canvas"),
     kittydar = require("../kittydar");
 
 var dir = __dirname + "/TEST/";
@@ -22,7 +23,7 @@ function runTest() {
       return path.extname(file) == ".jpg";
     })
 
-    images = images.slice(0, 1);
+    images = images.slice(0, 2);
 
     async.forEach(images, function(file, done) {
       file = dir + file;
@@ -30,7 +31,10 @@ function runTest() {
       fs.readFile(file + ".rect", "utf-8", function(err, text) {
         if (err) throw err;
 
-        var vals = text.split(" ");
+        var vals = text.split(" ").map(function(val) {
+          return parseInt(val)
+        })
+
         var rect = {
           x: vals[0],
           y: vals[1],
@@ -51,13 +55,16 @@ function runTest() {
           console.log("testing", file);
 
           cats.forEach(function(cat) {
-            if (doesOverlap(cat, rect)) {
+            var overlaps = doesOverlap(cat, rect);
+
+            if (overlaps) {
               missed = false;
               truePos++;
             }
             else {
               falsePos++;
             }
+            saveCrop(canvas, cat, overlaps);
           });
 
           if (missed) {
@@ -81,6 +88,22 @@ function runTest() {
   });
 }
 
+function saveCrop(canvas, cat, isTrue) {
+  var cropCanvas = new Canvas(cat.width, cat.height);
+  var ctx = cropCanvas.getContext('2d');
+  ctx.patternQuality = "best";
+
+  ctx.drawImage(canvas, cat.x, cat.y, cat.width, cat.height,
+                0, 0, cat.width, cat.height);
+
+  var dir = __dirname + "/CROPS/" + (isTrue ? "/TRUE/" : "/FALSE/");
+  var file = dir + cat.x + "_" + cat.y + "_" + cat.width
+             + "_" + cat.prob.toFixed(2) + ".jpg"
+  utils.writeCanvasToFile(cropCanvas, file, function(err) {
+    if (err) console.log(err);
+  });
+}
+
 function doesOverlap(cat, rect) {
   var overlapW, overlapH;
 
@@ -98,8 +121,14 @@ function doesOverlap(cat, rect) {
     overlapH = Math.min((cat.y + cat.height) - rect.y, rect.height);
   }
 
-  if (overlapW > 0 && overlapH > 0) {
-    return (overlapH * overlapW) > (cat.width * cat.height * 0.5);
+  if (overlapW <= 0 || overlapH <= 0) {
+    return false;
+  }
+  var intersect = overlapW * overlapH;
+  var union = (cat.width * cat.height) + (rect.width * rect.height) - (intersect * 2);
+
+  if (intersect / union > 0.5) {
+    return true;
   }
   return false;
 }

@@ -6,10 +6,9 @@ var fs = require("fs"),
     utils = require("../utils"),
     features = require("../features");
 
+trainNetwork()
 
-testParams();
-
-function testParams(params) {
+function trainNetwork(params) {
   getCanvases(function(canvases) {
     var data = canvases.map(function(canvas) {
       var fts = features.extractFeatures(canvas.canvas, params);
@@ -19,42 +18,32 @@ function testParams(params) {
       };
     });
 
-    console.log("training on", data.length)
+    data = _(data).sortBy(function() {
+      return Math.random();
+    });
+
+    console.log("training with", data.length);
 
     var opts = {
-      hiddenLayers: [30]
+      hiddenLayers: [40]
     };
     var trainOpts = {
       errorThresh: 0.006,
       log: true
     };
 
-    var stats = brain.crossValidate(brain.NeuralNetwork, data, opts, trainOpts);
-    stats.featureSize = data[0].input.length;
+    var network = new brain.NeuralNetwork(opts);
 
-    console.log("params", stats.params);
-    console.log("stats", stats.stats);
-    console.log("avgs", stats.avgs);
+    var stats = network.train(data, trainOpts);
 
-    fs.writeFile('misclasses.json', JSON.stringify(stats.misclasses, 4), function (err) {
+    console.log("stats:", stats);
+    console.log("parameters:", opts);
+
+    var json = JSON.stringify(network.toJSON(), 4)
+
+    fs.writeFile('network.json', json, function (err) {
       if (err) throw err;
-      console.log('saved misclasses to misclasses.json');
-    });
-
-    var minError = 1;
-    var network;
-
-    stats.sets.forEach(function(set) {
-      if (set.error < minError) {
-        minError = set.error;
-        network = set.network;
-      }
-    })
-
-    var json = JSON.stringify(network, 4)
-    fs.writeFile('cv-network.json', json, function (err) {
-      if (err) throw err;
-      console.log('saved network to cv-network.json');
+      console.log('saved network to network.json');
     });
   })
 }
@@ -65,12 +54,12 @@ function getCanvases(callback) {
   fs.readdir(posDir, function(err, files) {
     if (err) throw err;
 
-    getDir(posDir, files, 1, function(posData) {
+    getDir(posDir, files, 1, 8000, function(posData) {
       var negsDir = __dirname + "/NEGATIVES/";
       fs.readdir(negsDir, function(err, files) {
         if (err) throw err;
 
-        getDir(negsDir, files, 0, function(negData) {
+        getDir(negsDir, files, 0, 8000, function(negData) {
           var data = posData.concat(negData);
 
           callback(data);
@@ -80,8 +69,7 @@ function getCanvases(callback) {
   });
 }
 
-function getDir(dir, files, isCat, callback) {
-  var limit = 4000;
+function getDir(dir, files, isCat, limit, callback) {
   var images = files.filter(function(file) {
     return path.extname(file) == ".jpg";
   });

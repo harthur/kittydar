@@ -1,5 +1,16 @@
 var assert = require("assert");
 
+r1 = { x: 204,
+  y: 285.59999999999997,
+  width: 183.6,
+  height: 183.6,
+  prob: 0.9812387701219626 }
+
+r2 = { x: '187', y: '71', width: '207', height: '207' }
+
+doesOverlap(r2, r1);
+
+process.exit(1);
 
 function test(r1, r2, expected) {
   var overlaps = doesOverlap(r1, r2);
@@ -42,8 +53,13 @@ r1 = {x: 0, y: 0, width: 10, height: 10};
 r2 = {x: 2, y: 2, width: 1, height: 1};
 
 test(r1, r2, false);
-test(r2, r1, true);
+test(r2, r1, false);
 
+r1 = {x: 187, y: 71, width: 207, height: 207};
+r2 = {x: 204, y: 285.599999999999997, width: 183.6, height: 183.6};
+
+test(r1, r2, false);
+test(r2, r1, false);
 
 function doesOverlap(cat, rect) {
   var overlapW, overlapH;
@@ -62,8 +78,16 @@ function doesOverlap(cat, rect) {
     overlapH = Math.min((cat.y + cat.height) - rect.y, rect.height);
   }
 
-  if (overlapW > 0 && overlapH > 0) {
-    return (overlapH * overlapW) > (cat.width * cat.height * 0.5);
+  console.log(overlapW, overlapH);
+
+  if (overlapW <= 0 || overlapH <= 0) {
+    return false;
+  }
+  var intersect = overlapW * overlapH;
+  var union = (cat.width * cat.height) + (rect.width * rect.height) - (intersect * 2);
+
+  if (intersect / union > 0.5) {
+    return true;
   }
   return false;
 }
