@@ -25,7 +25,7 @@ function trainNetwork(params) {
     console.log("training with", data.length);
 
     var opts = {
-      hiddenLayers: [40]
+      hiddenLayers: [30]
     };
     var trainOpts = {
       errorThresh: 0.006,
@@ -54,12 +54,12 @@ function getCanvases(callback) {
   fs.readdir(posDir, function(err, files) {
     if (err) throw err;
 
-    getDir(posDir, files, 1, 8000, function(posData) {
+    getDir(posDir, files, 1, 4000, 10000, function(posData) {
       var negsDir = __dirname + "/NEGATIVES/";
       fs.readdir(negsDir, function(err, files) {
         if (err) throw err;
 
-        getDir(negsDir, files, 0, 8000, function(negData) {
+        getDir(negsDir, files, 0, 8000, 16000, function(negData) {
           var data = posData.concat(negData);
 
           callback(data);
@@ -69,23 +69,23 @@ function getCanvases(callback) {
   });
 }
 
-function getDir(dir, files, isCat, limit, callback) {
+function getDir(dir, files, isCat, min, limit, callback) {
   var images = files.filter(function(file) {
     return path.extname(file) == ".jpg";
   });
-  images = images.slice(0, limit);
+  images = images.slice(min, limit);
 
   var data = [];
 
   async.map(images, function(file, done) {
     file = dir + file;
 
-    utils.drawImgToCanvas(file, function(canvas) {
+    utils.drawImgToCanvas(file, function(err, canvas) {
       done(null, {canvas: canvas, file: file, isCat: isCat});
     });
   },
   function(err, canvases) {
-    console.log("got one directory of images")
+    console.log("got one directory of images");
     callback(canvases);
   });
 }

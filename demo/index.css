@@ -1,0 +1,80 @@
+body {
+  font-family: Helvetica Neue, sans-serif;
+}
+
+#title {
+  font-size: 46px;
+  font-family: CatsAlphabet, sans-serif;
+  text-transform: uppercase;
+}
+
+#title::first-letter {
+  font-size: 44px;
+}
+
+#subtitle {
+  font-family: Monaco, Menlo, Tahoma, sans-serif;
+  margin-top: 20px;
+}
+
+#container {
+  width: 900px;
+  margin: 100px auto;
+  text-align: center;
+}
+
+#viewer {
+  position: relative;
+  margin: 80px auto;
+  width: 500px;
+  height: 240px;
+  border: 4px dashed #ccc;
+  border-radius: 10px;
+  vertical-align: baseline;
+  text-align: center;
+  text-shadow: 1px 1px 0 #fff;
+}
+
+#viewer.dragover {
+  border: 5px dashed #555;
+}
+
+#droparea-text {
+  z-index: 0;
+  margin-top: 100px;
+  font-size: 20px;
+  font-weight: bold;
+  color: #555;
+}
+
+#preview {
+  z-index: 1;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+}
+
+#annotations {
+  z-index: 2;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+}
+
+#drawing {
+  font-family: CatsAlphabet;
+  font-size: 42px;
+}
+
+@font-face {
+  font-family: Catastrophe;
+  src: url(catastrophe.ttf);
+  font-weight: 400;
+}
+
+
+@font-face {
+  font-family: CatsAlphabet;
+  src: url(CatsAlphabet.ttf);
+  font-weight: 400;
+}

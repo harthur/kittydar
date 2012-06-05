@@ -41,20 +41,6 @@ var combos = [
   cellSize: 4,
   blockSize: 2,
   blockStride: 1,
-  bins: 9,
-  norm: "L2"
-},
-{
-  cellSize: 4,
-  blockSize: 2,
-  blockStride: 2,
-  bins: 9,
-  norm: "L2"
-},
-{
-  cellSize: 4,
-  blockSize: 2,
-  blockStride: 1,
   bins: 6,
   norm: "L2"
 },
@@ -63,20 +49,6 @@ var combos = [
   blockSize: 2,
   blockStride: 1,
   bins: 7,
-  norm: "L2"
-},
-{
-  cellSize: 6,
-  blockSize: 2,
-  blockStride: 1,
-  bins: 9,
-  norm: "L2"
-},
-{
-  cellSize: 6,
-  blockSize: 2,
-  blockStride: 1,
-  bins: 6,
   norm: "L2"
 }
 ];
@@ -185,7 +157,7 @@ function getDir(dir, files, isCat, callback) {
   async.map(images, function(file, done) {
     file = dir + file;
 
-    utils.drawImgToCanvas(file, function(canvas) {
+    utils.drawImgToCanvas(file, function(err, canvas) {
       done(null, {canvas: canvas, file: file, isCat: isCat});
     });
   },

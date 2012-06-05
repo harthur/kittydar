@@ -41,10 +41,17 @@ exports.dataToCanvas = function(imagedata) {
 
 exports.drawImgToCanvas = function(file, callback) {
   fs.readFile(file, function(err, data) {
-    if (err) throw err;
-    var canvas = exports.dataToCanvas(data);
-
-    callback(canvas);
+    if (err) {
+      // console.log(file, err)
+      return callback(err);
+    }
+    try {
+      var canvas = exports.dataToCanvas(data);
+    } catch(err) {
+      // console.log(file, err)
+      return callback(err);
+    }
+    callback(null, canvas);
   });
 }
 

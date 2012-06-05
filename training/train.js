@@ -81,7 +81,7 @@ function getCanvases(callback) {
 }
 
 function getDir(dir, files, isCat, callback) {
-  var limit = 4000;
+  var limit = 5000;
   var images = files.filter(function(file) {
     return path.extname(file) == ".jpg";
   });
@@ -92,7 +92,7 @@ function getDir(dir, files, isCat, callback) {
   async.map(images, function(file, done) {
     file = dir + file;
 
-    utils.drawImgToCanvas(file, function(canvas) {
+    utils.drawImgToCanvas(file, function(err, canvas) {
       done(null, {canvas: canvas, file: file, isCat: isCat});
     });
   },

@@ -6,7 +6,7 @@ FlickRaw.api_key="0cc11cffc8a238efef4dfa6dca255a44"
 FlickRaw.shared_secret="5f76a97053f99673"
 
 $count = 0
-$start = 5690
+$start = 4100
 
 $fetched = Hash.new
 
@@ -19,7 +19,7 @@ def getPage(page)
     if $fetched[url] != 1
       $fetched[url] = 1
 
-      file = "NEGS_FLICKR/#{$count + $start}.jpg"
+      file = "NEGS_FLICKR_TEST/#{$count + $start}.jpg"
       open(file, 'wb') do |file|
         file << open(url).read
       end
@@ -29,6 +29,6 @@ def getPage(page)
   end
 end
 
-100.times do |i|
+20.times do |i|
   getPage(i * 3)
 end

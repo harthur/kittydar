@@ -11,7 +11,7 @@ var dir = __dirname + "/NEGS_FLICKR/";
 var outdir = __dirname + "/NEGS_RAW_SAMPLED/";
 
 var count = 0;
-var start = 45005;
+var start = 218652;
 
 var perFile = 9;
 
@@ -22,7 +22,8 @@ fs.readdir(dir, function(err, files) {
     return path.extname(file) == ".jpg";
   });
 
-  images = images.slice(1000 * 5, 1000 * 6);
+  images = images.slice(1000 * 25, 1000 * 26);
+  console.log(images.length)
 
   images.forEach(function(image) {
     var outfile = outdir + (start + count) + ".jpg";
