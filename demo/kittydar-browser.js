@@ -1,25 +1,28 @@
-var Canvas = require("canvas"),
-    brain = require("brain"),
-    hog = require("hog-descriptor"),
-    features = require("./features");
-
-var network = require("./network.json");
-var net = new brain.NeuralNetwork().fromJSON(network);
-
-var threshold = 0.9;
-
 var kittydar = {
-  detectCats: function(canvas) {
-    var min = 48;
+  detectCats: function(canvas, options) {
+    this.setOptions(options || {});
+
     var resizes = this.getAllSizes(canvas, min);
 
     var cats = [];
     resizes.forEach(function(resize) {
-      var detected = kittydar.detectAtFixed(resize.imagedata,
-                                            min, resize.scale);
-      cats = cats.concat(detected);
+      var kitties = kittydar.detectAtFixed(resize.imagedata, resize.scale);
+      cats = cats.concat(kitties);
     });
     return cats;
+  },
+
+  setOptions: function(options) {
+    this.minWindow = options.minWindow || 48;
+    this.threshold = options.threshold || 0.98;
+    this.network = options.network || network;
+    this.HOGparams = options.HOGparams || {
+      "cellSize": 4,
+      "blockSize": 2,
+      "blockStride": 1,
+      "bins": 6,
+      "norm": "L2"
+    };
   },
 
   getAllSizes: function(canvas, fixed) {
@@ -27,7 +30,7 @@ var kittydar = {
     // resized to accomodate various window sizes
 
     // smallest window size
-    fixed = fixed || 48;
+    fixed = fixed || this.minWindow;
 
     // resize canvas to cut down on number of windows to check
     var resize = 360;
@@ -52,7 +55,7 @@ var kittydar = {
     var height = Math.floor(canvas.height * scale);
 
     // resize the image so the fixed size can mimic window size
-    canvas = resizeCanvas(canvas, width, height);
+    canvas = this.resizeCanvas(canvas, width, height);
     var ctx = canvas.getContext("2d");
     var imagedata = ctx.getImageData(0, 0, width, height);
 
@@ -60,33 +63,26 @@ var kittydar = {
   },
 
   isCat: function(intensities) {
-    var options = {
-      "cellSize": 4,
-      "blockSize": 2,
-      "blockStride": 1,
-      "bins": 6,
-      "norm": "L2"
-    };
-
-    var fts = hog.extractHOGFromIntensities(intensities, options);
-    var prob = net.run(fts)[0];
+    var fts = hog.extractHOGFromIntensities(intensities, this.HOGparams);
+    var prob = this.network.run(fts)[0];
     return prob;
   },
 
-  detectAtFixed: function(imagedata, fixed, scale) {
+  detectAtFixed: function(imagedata, scale, fixed) {
     // Only detect using a sliding window of a fixed size.
     // Take an ImageData instead of canvas so that this can be
     // used from a Worker thread.
+    fixed = fixed || this.minWindow;
     var intensities = hog.intensities(imagedata);
     var shift = 6;
     var cats = [];
 
     for (var y = 0; y + fixed < imagedata.height; y += shift) {
       for (var x = 0; x + fixed < imagedata.width; x += shift) {
-        var win = getRect(intensities, x, y, fixed, fixed);
-        var prob = this.isCat(win);
+        var win = this.getRect(intensities, x, y, fixed, fixed);
+        var prob = this.isCat(win, network);
 
-        if (prob > threshold) {
+        if (prob > this.threshold) {
           cats.push({
             x: Math.floor(x / scale),
             y: Math.floor(y / scale),
@@ -98,28 +94,29 @@ var kittydar = {
       }
     }
     return cats;
-  }
-}
+  },
 
-function getRect(matrix, x, y, width, height) {
-  var square = new Array(height);
-  for (var i = 0; i < height; i++) {
-    square[i] = new Array(width);
-    for (var j = 0; j < width; j++) {
-      square[i][j] = matrix[y + i][x + j];
+  getRect: function(matrix, x, y, width, height) {
+    var square = new Array(height);
+    for (var i = 0; i < height; i++) {
+      square[i] = new Array(width);
+      for (var j = 0; j < width; j++) {
+        square[i][j] = matrix[y + i][x + j];
+      }
     }
+    return square;
+  },
+
+  resizeCanvas: function(canvas, width, height) {
+    var resizeCanvas = document.createElement("canvas");
+    resizeCanvas.width = width;
+    resizeCanvas.height = height;
+
+    var ctx = resizeCanvas.getContext('2d');
+    ctx.patternQuality = "best";
+
+    ctx.drawImage(canvas, 0, 0, canvas.width, canvas.height,
+                  0, 0, width, height);
+    return resizeCanvas;
   }
-  return square;
 }
-
-function resizeCanvas(canvas, width, height) {
-  var resizeCanvas = new Canvas(width, height);
-  var ctx = resizeCanvas.getContext('2d');
-  ctx.patternQuality = "best";
-
-  ctx.drawImage(canvas, 0, 0, canvas.width, canvas.height,
-                0, 0, width, height);
-  return resizeCanvas;
-}
-
-module.exports = kittydar;

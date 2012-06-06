@@ -7,11 +7,10 @@ var http = require("http"),
     _ = require("underscore"),
     utils = require("../../utils");
 
-var dir = __dirname + "/NEGS_FLICKR/";
+var dir = __dirname + "/NEGS_FLICKR2/";
 var outdir = __dirname + "/NEGS_SAMPLED/";
 
-var count = 0;
-var start = 18002;
+var part = parseInt(process.argv[2]);
 
 var perFile = 1;
 
@@ -22,12 +21,10 @@ fs.readdir(dir, function(err, files) {
     return path.extname(file) == ".jpg";
   });
 
-  images = images.slice(9000 * 2, 9000 * 3);
-  console.log(images.length)
+  images = images.slice(9500 * part, 9500 * (part + 1));
+  console.log(images.length);
 
   images.forEach(function(image) {
-    var outfile = outdir + (start + count) + ".jpg";
-
     try {
       var canvas = utils.drawImgToCanvasSync(dir + image);
     }
@@ -38,8 +35,9 @@ fs.readdir(dir, function(err, files) {
     var canvases = generateFromRaw(canvas);
 
     canvases.forEach(function(canvas) {
-      count++;
-      var file = outdir + (start + count) + ".jpg";
+      var name = Math.floor(Math.random() * 1000000000);
+      var file = outdir + name + ".jpg";
+
       utils.writeCanvasToFile(canvas, file, function() {
         console.log("wrote to", file)
       });

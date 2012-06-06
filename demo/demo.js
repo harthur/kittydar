@@ -77,6 +77,8 @@ function drawToCanvas(img) {
 }
 
 var detector = {
+  minWindow: 48,
+
   detectCats: function() {
     var canvas = $("#preview").get(0);
 
@@ -85,16 +87,18 @@ var detector = {
       worker.onmessage = this.onMessage;
       worker.onerror = this.onError;
 
-      var imagedata = canvas.getImageData(0, 0, canvas.width, canvas.height);
-      worker.postMessage(imagedata);
+      var resizes = kittydar.getAllSizes(canvas, this.minWindow);
+      worker.postMessage(resizes);
     }
     else {
-      var rects = kittydar.detectCats(canvas);
+      var rects = kittydar.detectCats(canvas, network);
       this.paintRects(rects);
     }
   },
 
   paintRects : function(rects) {
+    console.log(rects.length);
+
     var canvas = $("#annotations").get(0);
     var ctx = canvas.getContext("2d");
 
@@ -108,13 +112,12 @@ var detector = {
   },
 
   onMessage : function(event) {
-    var data = JSON.parse(event.data);
-
+    var data = event.data;
     if (data.type == 'progress') {
-      this.showProgress(data);
+      detector.showProgress(data);
     }
     else if (data.type == 'result') {
-      this.paintRects(data.rects);
+      detector.paintRects(data.cats);
     }
   },
 
@@ -123,6 +126,7 @@ var detector = {
   },
 
   showProgress : function(progress) {
+    console.log(progress.scale);
     /*
       var completed = progress.iterations / trainer.iterations * 100;
       $("#progress-completed").css("width", completed + "%");
