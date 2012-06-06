@@ -1,9 +1,6 @@
 $(document).ready(function() {
   var viewer = $("#viewer");
 
-
-  var anno = $("#annotations");
-
   viewer.on('dragover', function(e) {
     e.stopPropagation();
     e.preventDefault();
@@ -28,10 +25,8 @@ $(document).ready(function() {
 
     var files = e.originalEvent.dataTransfer.files;
     handleFiles(files);
-
     return false;
   });
-
 });
 
 function handleFiles(files) {
@@ -47,18 +42,18 @@ function handleFiles(files) {
   var reader = new FileReader();
   reader.onload = function(e) {
     img.src = e.target.result;
-    drawCanvas(img);
-    detectCats();
+    drawToCanvas(img);
+
+    detector.detectCats();
   };
 
   reader.readAsDataURL(file);
 }
 
-function drawCanvas(img) {
+function drawToCanvas(img) {
   var width = img.width;
   var height = img.height;
 
-  var min = Math.min(width, height);
   var max = Math.max(width, height)
   var scale = Math.min(max, 420) / max;
 
@@ -81,23 +76,56 @@ function drawCanvas(img) {
                     0, 0, width, height);
 }
 
+var detector = {
+  detectCats: function() {
+    var canvas = $("#preview").get(0);
 
-function detectCats() {
-  var canvas = $("#annotations").get(0);
-  var ctx = canvas.getContext("2d");
+    if (window.Worker) {
+      var worker = new Worker("detection-worker.js");
+      worker.onmessage = this.onMessage;
+      worker.onerror = this.onError;
 
-  ctx.lineWidth = 2;
-  ctx.strokeStyle = "red";
-  ctx.shadowOffsetX = 2;
-  ctx.shadowOffsetY = 2;
-  ctx.shadowBlur = 2;
-  ctx.shadowColor = "rgba(1, 1, 1, 1)";
+      var imagedata = canvas.getImageData(0, 0, canvas.width, canvas.height);
+      worker.postMessage(imagedata);
+    }
+    else {
+      var rects = kittydar.detectCats(canvas);
+      this.paintRects(rects);
+    }
+  },
 
-  var cats = [{x: 20, y: 20, width: 30, height: 30}];  //kittydar.detectCats(canvas);
+  paintRects : function(rects) {
+    var canvas = $("#annotations").get(0);
+    var ctx = canvas.getContext("2d");
 
-  for (var i = 0; i < cats.length; i++) {
-    var cat = cats[i];
-    ctx.strokeRect(cat.x, cat.y, cat.width, cat.height);
-    //context.strokeRect(cat.x - 1, cat.y - 1, cat.width + 1, cat.height + 1);
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = "red";
+
+    for (var i = 0; i < rects.length; i++) {
+      var rect = rects[i];
+      ctx.strokeRect(rect.x, rect.y, rect.width, rect.height);
+    }
+  },
+
+  onMessage : function(event) {
+    var data = JSON.parse(event.data);
+
+    if (data.type == 'progress') {
+      this.showProgress(data);
+    }
+    else if (data.type == 'result') {
+      this.paintRects(data.rects);
+    }
+  },
+
+  onError : function(event) {
+    console.log("Error from detection Worker:", event.message)
+  },
+
+  showProgress : function(progress) {
+    /*
+      var completed = progress.iterations / trainer.iterations * 100;
+      $("#progress-completed").css("width", completed + "%");
+    */
   }
 }

@@ -8,8 +8,8 @@ var fs = require("fs"),
 
 var trained = require("./network.json");
 
-var dir = __dirname + "/NEGS_RAW_SAMPLED/";
-var minedDir = __dirname + "/HARD_NEGS/";
+var dir = __dirname + "/NEGS_SAMPLED/";
+var minedDir = __dirname + "/NEGS_HARD/";
 
 var start = 0;
 var count = 0;

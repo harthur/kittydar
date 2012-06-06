@@ -42,13 +42,11 @@ function runTest() {
           height: vals[3]
         };
 
-        utils.drawImgToCanvas(file, function(canvas) {
+        utils.drawImgToCanvas(file, function(err, canvas) {
           console.time("detecting")
           console.log(canvas)
-          var info = kittydar.detectCats(canvas);
-          var cats = info.cats;
+          var cats = kittydar.detectCats(canvas);
           console.timeEnd("detecting")
-          total += info.total;
 
           var missed = true;
 
@@ -78,7 +76,6 @@ function runTest() {
     function() {
       console.log("misses", misses)
       console.log("truePos", truePos, "falsePos", falsePos);
-      console.log("total", total);
 
       var precision = truePos / (truePos + falsePos);
       console.log("precision", precision);

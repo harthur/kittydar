@@ -8,12 +8,12 @@ var http = require("http"),
     utils = require("../../utils");
 
 var dir = __dirname + "/NEGS_FLICKR/";
-var outdir = __dirname + "/NEGS_RAW_SAMPLED/";
+var outdir = __dirname + "/NEGS_SAMPLED/";
 
 var count = 0;
-var start = 218652;
+var start = 18002;
 
-var perFile = 9;
+var perFile = 1;
 
 fs.readdir(dir, function(err, files) {
   if (err) throw err;
@@ -22,7 +22,7 @@ fs.readdir(dir, function(err, files) {
     return path.extname(file) == ".jpg";
   });
 
-  images = images.slice(1000 * 25, 1000 * 26);
+  images = images.slice(9000 * 2, 9000 * 3);
   console.log(images.length)
 
   images.forEach(function(image) {
@@ -33,6 +33,7 @@ fs.readdir(dir, function(err, files) {
     }
     catch(e) {
       console.log(e, dir + image);
+      return;
     }
     var canvases = generateFromRaw(canvas);
 

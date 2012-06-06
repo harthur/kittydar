@@ -67,13 +67,6 @@ body {
 }
 
 @font-face {
-  font-family: Catastrophe;
-  src: url(catastrophe.ttf);
-  font-weight: 400;
-}
-
-
-@font-face {
   font-family: CatsAlphabet;
   src: url(CatsAlphabet.ttf);
   font-weight: 400;

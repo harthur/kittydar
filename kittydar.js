@@ -1,5 +1,6 @@
 var Canvas = require("canvas"),
     brain = require("brain"),
+    hog = require("hog-descriptor"),
     features = require("./features");
 
 var network = require("./network.json");
@@ -8,69 +9,128 @@ var net = new brain.NeuralNetwork().fromJSON(network);
 var threshold = 0.9;
 
 exports.detectCats = function detectCats(canvas) {
-  var width = canvas.width,
-      height = canvas.height;
+  var imagedata = canvas;
+  if (imagedata.data && imagedata.width && imagedata.height) {
+    // it's actually an imagedata object
+    canvas = new Canvas(imagedata.width, imagedata.height);
+    var ctx = canvas.getContext("2d");
+    ctx.putImageData(imagedata, 0, 0);
+  }
 
-  // scale to reduce computation time
-  var scale = 360 / Math.max(width, height);
-  width = width * scale;
-  height = height * scale;
+  var width = canvas.width;
+  var height = canvas.height;
+
+  var max = Math.max(width, height)
+  var scale = Math.min(max, 360) / max;
+
+  width *= scale;
+  height *= scale;
 
   canvas = resizeCanvas(canvas, width, height);
 
-  var min = 48;
-  var max = Math.min(width, height);
+  var min = 48; // starting window size
 
   var cats = [];
-  var total = 0;
   for (var size = min; size < max; size += 12) {
-    var info = detectAtScale(canvas, size, min);
-    cats = cats.concat(info.cats);
-    total += info.total;
+    cats = cats.concat(detectAtSize(canvas, size, min));
   }
-  console.log(cats[0])
-  console.log(scale)
 
   cats = cats.map(function(cat) {
     return {
-      x: cat.x / scale,
-      y: cat.y / scale,
-      width: cat.width / scale,
-      height: cat.height / scale,
+      x: Math.floor(cat.x / scale),
+      y: Math.floor(cat.y / scale),
+      width: Math.floor(cat.width / scale),
+      height: Math.floor(cat.height / scale),
       prob: cat.prob
     }
   });
 
-  console.log(cats[0]);
-
-  return {cats: cats, total: total};
+  return cats;
 }
 
-function isCat(canvas) {
-  var fts = features.extractFeatures(canvas);
+function detectAtSize(canvas, size, fixed) {
+  var scale = fixed / size;
+
+  var width = Math.floor(canvas.width * scale);
+  var height = Math.floor(canvas.height * scale);
+
+  canvas = resizeCanvas(canvas, width, height);
+  var ctx = canvas.getContext("2d");
+  var imagedata = ctx.getImageData(0, 0, width, height);
+
+  var cats = detectAtFixed(imagedata, fixed, scale);
+  return cats;
+}
+
+function isCat(intensities) {
+  var options = {
+    "cellSize": 4,
+    "blockSize": 2,
+    "blockStride": 1,
+    "bins": 6,
+    "norm": "L2"
+  };
+
+  var fts = hog.extractHOGFromIntensities(intensities, options);
   var prob = net.run(fts)[0];
   return prob;
 }
 
-function detectAtScale(canvas, scale, resizeTo) {
-  var shift = Math.floor(scale / 9);
+function detectAtFixed(imagedata, fixed, scale) {
+  console.log("detect at fixed", fixed, scale);
+  var shift = 6;
+
+  var intensities = hog.intensities(imagedata);
 
   var cats = [];
-  var count = 0;
 
-  for (var y = 0; y + scale < canvas.height; y += shift) {
-    for (var x = 0; x + scale < canvas.width; x += shift) {
-      count++;
-      var win = cropAndResize(canvas, x, y, scale, resizeTo);
-
+  for (var y = 0; y + fixed < imagedata.height; y += shift) {
+    for (var x = 0; x + fixed < imagedata.width; x += shift) {
+      var win = getRect(intensities, x, y, fixed, fixed);
       var prob = isCat(win);
+
       if (prob > threshold) {
-        cats.push({ x: x, y: y, width: scale, height: scale, prob: prob });
+        cats.push({
+          x: Math.floor(x / scale),
+          y: Math.floor(y / scale),
+          width: Math.floor(fixed / scale),
+          height: Math.floor(fixed / scale),
+          prob: prob
+        });
       }
     }
   }
-  return {cats: cats, total: count};
+  return cats;
 }
+
+function getRect(matrix, x, y, width, height) {
+  var square = new Array(height);
+
+  for (var i = 0; i < height; i++) {
+    square[i] = new Array(width);
+
+    for (var j = 0; j < width; j++) {
+      square[i][j] = matrix[y + i][x + j];
+    }
+  }
+  return square;
+}
+
+function getIntensities(elements, x, y, size, bins) {
+  var histogram = zeros(bins);
+
+  for (var i = 0; i < size; i++) {
+    for (var j = 0; j < size; j++) {
+      var vector = elements[y + i][x + j];
+      var bin = binFor(vector.orient, bins);
+      histogram[bin] += vector.mag;
+    }
+  }
+  return histogram;
+}
+
+
+
 
 function resizeCanvas(canvas, width, height) {
   var resizeCanvas = new Canvas(width, height);
