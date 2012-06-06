@@ -19,7 +19,7 @@ body {
 
 #container {
   width: 900px;
-  margin: 100px auto;
+  margin: 100px auto 0px auto;
   text-align: center;
 }
 

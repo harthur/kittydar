@@ -1,4 +1,6 @@
 var kittydar = {
+  minWindow: 48,
+
   detectCats: function(canvas, options) {
     this.setOptions(options || {});
 
@@ -14,7 +16,7 @@ var kittydar = {
 
   setOptions: function(options) {
     this.minWindow = options.minWindow || 48;
-    this.threshold = options.threshold || 0.98;
+    this.threshold = options.threshold || 0.999;
     this.network = options.network || network;
     this.HOGparams = options.HOGparams || {
       "cellSize": 4,

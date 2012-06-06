@@ -40,7 +40,7 @@ var kittydar = {
       var imagedata = this.resizeToFixed(canvas, winScale);
 
       resizes.push({
-        imagedata: imagedata,
+        imagedata: imagedata
         scale: winScale
       })
     }

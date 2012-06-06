@@ -41,10 +41,12 @@ function handleFiles(files) {
 
   var reader = new FileReader();
   reader.onload = function(e) {
+    img.onload = function() {
+      drawToCanvas(img);
+      detector.abortCurrent();
+      detector.detectCats();
+    }
     img.src = e.target.result;
-    drawToCanvas(img);
-
-    detector.detectCats();
   };
 
   reader.readAsDataURL(file);
@@ -77,7 +79,11 @@ function drawToCanvas(img) {
 }
 
 var detector = {
-  minWindow: 48,
+  abortCurrent: function() {
+    if (this.worker) {
+      this.worker.terminate();
+    }
+  },
 
   detectCats: function() {
     var canvas = $("#preview").get(0);
@@ -87,8 +93,10 @@ var detector = {
       worker.onmessage = this.onMessage;
       worker.onerror = this.onError;
 
-      var resizes = kittydar.getAllSizes(canvas, this.minWindow);
+      var resizes = kittydar.getAllSizes(canvas);
       worker.postMessage(resizes);
+
+      this.worker = worker;
     }
     else {
       var rects = kittydar.detectCats(canvas, network);
@@ -97,8 +105,6 @@ var detector = {
   },
 
   paintRects : function(rects) {
-    console.log(rects.length);
-
     var canvas = $("#annotations").get(0);
     var ctx = canvas.getContext("2d");
 
