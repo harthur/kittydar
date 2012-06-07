@@ -26,7 +26,7 @@ fs.readdir(dir, function(err, files) {
   });
 
   // to get around open fd limit
-  images = images.slice(9000 * part, 9000 * (part + 1));
+  images = images.slice(9500 * part, 9500 * (part + 1));
 
   console.log(images.length)
 

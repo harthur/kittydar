@@ -46,6 +46,7 @@ function handleFiles(files) {
       detector.abortCurrent();
       detector.detectCats();
     }
+    $("#progress").text("loading image...");
     img.src = e.target.result;
   };
 
@@ -86,6 +87,8 @@ var detector = {
   },
 
   detectCats: function() {
+    $("#progress").text("detecting cats...");
+
     var canvas = $("#preview").get(0);
 
     if (window.Worker) {
@@ -100,16 +103,30 @@ var detector = {
     }
     else {
       var rects = kittydar.detectCats(canvas, network);
-      this.paintRects(rects);
+      this.paintCats(rects);
     }
   },
 
-  paintRects : function(rects) {
+  paintCats : function(rects) {
+    var noun = rects.length == 1 ? "cat" : "cats";
+    $("#progress").text(rects.length + " " + noun + " detected");
+
+    this.clearRects();
+    this.paintRects(rects, "red");
+  },
+
+  clearRects: function() {
+    var canvas = $("#annotations").get(0);
+    var ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  },
+
+  paintRects : function(rects, color) {
     var canvas = $("#annotations").get(0);
     var ctx = canvas.getContext("2d");
 
     ctx.lineWidth = 2;
-    ctx.strokeStyle = "red";
+    ctx.strokeStyle = color || "red";
 
     for (var i = 0; i < rects.length; i++) {
       var rect = rects[i];
@@ -123,7 +140,7 @@ var detector = {
       detector.showProgress(data);
     }
     else if (data.type == 'result') {
-      detector.paintRects(data.cats);
+      detector.paintCats(data.cats);
     }
   },
 
@@ -132,7 +149,10 @@ var detector = {
   },
 
   showProgress : function(progress) {
-    console.log(progress.scale);
+    console.log(progress);
+    this.paintRects(progress.rects, "orange");
+    $("#progress").text("detecting in " + progress.size + "px windows...");
+
     /*
       var completed = progress.iterations / trainer.iterations * 100;
       $("#progress-completed").css("width", completed + "%");

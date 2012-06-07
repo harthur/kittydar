@@ -14,6 +14,7 @@ function testParams(params) {
     var data = canvases.map(function(canvas) {
       var fts = features.extractFeatures(canvas.canvas, params);
       return {
+        file: canvas.file,
         input: fts,
         output: [canvas.isCat]
       };
@@ -60,13 +61,13 @@ function testParams(params) {
 }
 
 function getCanvases(callback) {
-  var posDir = __dirname + "/POSITIVES/";
+  var posDir = __dirname + "/POSITIVES_TRAIN/";
 
   fs.readdir(posDir, function(err, files) {
     if (err) throw err;
 
     getDir(posDir, files, 1, function(posData) {
-      var negsDir = __dirname + "/NEGATIVES/";
+      var negsDir = __dirname + "/NEGATIVES_TRAIN/";
       fs.readdir(negsDir, function(err, files) {
         if (err) throw err;
 

@@ -27,13 +27,15 @@ function trainNetwork(params) {
       return Math.random();
     });
 
+    console.log(data[0].input.length)
+
     console.log("training with", data.length);
 
     var opts = {
       hiddenLayers: [30]
     };
     var trainOpts = {
-      errorThresh: 0.006,
+      errorThresh: 0.007,
       log: true
     };
 
@@ -46,25 +48,25 @@ function trainNetwork(params) {
 
     var json = JSON.stringify(network.toJSON(), 4)
 
-    fs.writeFile('network-hard.json', json, function (err) {
+    fs.writeFile('network-6-hard.json', json, function (err) {
       if (err) throw err;
-      console.log('saved network to network-hard.json');
+      console.log('saved network to network-6-hard.json');
     });
   })
 }
 
 function getCanvases(callback) {
-  var posDir = __dirname + "/POSITIVES/";
+  var posDir = __dirname + "/POSITIVES_TRAIN/";
 
   fs.readdir(posDir, function(err, files) {
     if (err) throw err;
 
-    getDir(posDir, files, 1, 0, 6000, function(posData) {
-      var negsDir = __dirname + "/NEGS_HARD/";
+    getDir(posDir, files, 1, 0, 4000, function(posData) {
+      var negsDir = __dirname + "/NEGATIVES_HARD/";
       fs.readdir(negsDir, function(err, files) {
         if (err) throw err;
 
-        getDir(negsDir, files, 0, 0, 6000, function(negData) {
+        getDir(negsDir, files, 0, 0, 4000, function(negData) {
           var data = posData.concat(negData);
 
           callback(data);

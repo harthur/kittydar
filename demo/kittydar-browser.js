@@ -4,7 +4,7 @@ var kittydar = {
   detectCats: function(canvas, options) {
     this.setOptions(options || {});
 
-    var resizes = this.getAllSizes(canvas, min);
+    var resizes = this.getAllSizes(canvas, this.minWindow);
 
     var cats = [];
     resizes.forEach(function(resize) {

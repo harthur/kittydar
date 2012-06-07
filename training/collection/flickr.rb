@@ -20,7 +20,7 @@ def getPage(page)
 
       name = rand(100000000000)
 
-      file = "NEGS_FLICKR2/#{name}.jpg"
+      file = "NEGS_FLICKR/#{name}.jpg"
 
       puts file
 
@@ -34,5 +34,5 @@ def getPage(page)
 end
 
 120.times do |i|
-  getPage((i * 3))
+  getPage((i * 7))
 end

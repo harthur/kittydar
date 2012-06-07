@@ -1,25 +1,23 @@
 importScripts(
-  "brain-0.6.0.js",
-  "hog-0.4.0.js",
-  "network.js",
-  "kittydar-browser.js"
+  "bundle.js"
 );
 
 onmessage = function(event) {
   var resizes = event.data;
   var minWindow = 48;
+
   var cats = [];
-
-  var net = new brain.NeuralNetwork().fromJSON(network)
-
-  kittydar.setOptions({ network: net });
-
   resizes.forEach(function(resize) {
     var detected = kittydar.detectAtFixed(resize.imagedata, resize.scale);
     cats = cats.concat(detected);
 
-    postProgress(resize);
+    postProgress({
+      size: resize.size,
+      rects: detected
+    });
   });
+
+  cats = kittydar.combineOverlaps(cats);
 
   postMessage({type: 'result', cats: cats});
 }
