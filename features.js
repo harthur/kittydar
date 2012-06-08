@@ -2,7 +2,7 @@ var hog = require("hog-descriptor"),
     utils = require("./utils");
 
 var defaultParams = {
-  "cellSize": 4,
+  "cellSize": 6,
   "blockSize": 2,
   "blockStride": 1,
   "bins": 6,

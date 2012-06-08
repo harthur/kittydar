@@ -25,8 +25,6 @@ function runTest() {
 
     images = images.slice(0, 2);
 
-    images = ["nightcat.jpg"]
-
     async.forEach(images, function(file, done) {
       file = dir + file;
 

@@ -24,6 +24,8 @@ function createCanvas (width, height) {
 var kittydar = {
   minWindow: 48,
 
+  resize: 360,
+
   threshold: 0.999,
 
   detectCats: function(canvas, options) {
@@ -43,7 +45,8 @@ var kittydar = {
 
   setOptions: function(options) {
     this.minWindow = options.minWindow || 48;
-    this.threshold = options.threshold || 0.90;
+    this.resize = options.resize || 360;
+    this.threshold = options.threshold || 0.99;
     this.network = options.network || network;
     this.HOGparams = options.HOGparams || {
       "cellSize": 4,
@@ -62,7 +65,7 @@ var kittydar = {
     fixed = fixed || this.minWindow;
 
     // resize canvas to cut down on number of windows to check
-    var resize = 360;
+    var resize = this.resize;
     var max = Math.max(canvas.width, canvas.height)
     var scale = Math.min(max, resize) / max;
 
@@ -92,9 +95,9 @@ var kittydar = {
     return imagedata;
   },
 
-  isCat: function(intensities) {
-    var fts = hog.extractHOGFromIntensities(intensities, this.HOGparams);
-    var prob = net.run(fts)[0];
+  isCat: function(vectors) {
+    var fts = hog.extractHOGFromVectors(vectors, this.HOGparams);
+    var prob = net.runInput(fts)[0];
     return prob;
   },
 
@@ -103,14 +106,14 @@ var kittydar = {
     // Take an ImageData instead of canvas so that this can be
     // used from a Worker thread.
     fixed = fixed || this.minWindow;
-    var intensities = hog.intensities(imagedata);
+    var vectors = hog.gradientVectors(imagedata);
     var shift = 6;
     var cats = [];
 
     for (var y = 0; y + fixed < imagedata.height; y += shift) {
       for (var x = 0; x + fixed < imagedata.width; x += shift) {
-        var win = getRect(intensities, x, y, fixed, fixed);
-        var prob = this.isCat(win, network);
+        var win = getRect(vectors, x, y, fixed, fixed);
+        var prob = this.isCat(win);
 
         if (prob > this.threshold) {
           cats.push({

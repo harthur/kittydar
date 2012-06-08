@@ -6,7 +6,7 @@ var fs = require("fs"),
     utils = require("../utils"),
     features = require("../features");
 
-console.log("training with hard negatives");
+console.log("training with random negatives");
 trainNetwork()
 
 function trainNetwork(params) {
@@ -48,9 +48,9 @@ function trainNetwork(params) {
 
     var json = JSON.stringify(network.toJSON(), 4)
 
-    fs.writeFile('network-6-hard.json', json, function (err) {
+    fs.writeFile('network-6.json', json, function (err) {
       if (err) throw err;
-      console.log('saved network to network-6-hard.json');
+      console.log('saved network to network-6.json');
     });
   })
 }
@@ -61,12 +61,12 @@ function getCanvases(callback) {
   fs.readdir(posDir, function(err, files) {
     if (err) throw err;
 
-    getDir(posDir, files, 1, 0, 4000, function(posData) {
-      var negsDir = __dirname + "/NEGATIVES_HARD/";
+    getDir(posDir, files, 1, 0, 5000, function(posData) {
+      var negsDir = __dirname + "/NEGATIVES_TRAIN/";
       fs.readdir(negsDir, function(err, files) {
         if (err) throw err;
 
-        getDir(negsDir, files, 0, 0, 4000, function(negData) {
+        getDir(negsDir, files, 0, 0, 5000, function(negData) {
           var data = posData.concat(negData);
 
           callback(data);

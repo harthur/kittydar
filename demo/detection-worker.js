@@ -2,6 +2,10 @@ importScripts(
   "bundle.js"
 );
 
+kittydar.setOptions({
+  resize: 400
+})
+
 onmessage = function(event) {
   var resizes = event.data;
   var minWindow = 48;

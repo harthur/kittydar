@@ -7,8 +7,8 @@ var http = require("http"),
     _ = require("underscore"),
     utils = require("../../utils");
 
-var dir = __dirname + "/NEGS_FLICKR2/";
-var outdir = __dirname + "/NEGS_SAMPLED/";
+var dir = __dirname + "/NEGS_FLICKR/";
+var outdir = __dirname + "/NEGS_SAMPLED2/";
 
 var part = parseInt(process.argv[2]);
 

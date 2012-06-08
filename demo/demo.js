@@ -151,7 +151,7 @@ var detector = {
   showProgress : function(progress) {
     console.log(progress);
     this.paintRects(progress.rects, "orange");
-    $("#progress").text("detecting in " + progress.size + "px windows...");
+    $("#progress").text("detecting at " + progress.size + "px...");
 
     /*
       var completed = progress.iterations / trainer.iterations * 100;
