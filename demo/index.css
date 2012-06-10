@@ -19,13 +19,13 @@ body {
 
 #container {
   width: 900px;
-  margin: 60px auto 0px auto;
+  margin: 44px auto 0px auto;
   text-align: center;
 }
 
 #viewer {
   position: relative;
-  margin: 80px auto 40px auto;
+  margin: 60px auto 30px auto;
   width: 500px;
   height: 240px;
   border: 4px dashed #ccc;

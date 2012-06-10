@@ -96,6 +96,9 @@ var detector = {
       worker.onmessage = this.onMessage;
       worker.onerror = this.onError;
 
+      kittydar.setOptions({
+        scaleStep: 6
+      })
       var resizes = kittydar.getAllSizes(canvas);
       worker.postMessage(resizes);
 

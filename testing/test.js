@@ -13,7 +13,7 @@ runTest();
 function runTest() {
   var truePos = 0;
   var falsePos = 0;
-  var misses = 0;
+  var misses = [];
   var total = 0;
 
   fs.readdir(dir, function(err, files) {
@@ -22,8 +22,6 @@ function runTest() {
     var images = files.filter(function(file) {
       return path.extname(file) == ".jpg";
     })
-
-    images = images.slice(0, 2);
 
     async.forEach(images, function(file, done) {
       file = dir + file;
@@ -44,13 +42,17 @@ function runTest() {
 
         utils.drawImgToCanvas(file, function(err, canvas) {
           console.time("detecting")
-          console.log(canvas)
-          var cats = kittydar.detectCats(canvas);
-          console.timeEnd("detecting")
+          var options = {
+            scaleStep: 6,
+            overlapThresh: 0.2,
+            minOverlaps: 2,
+            shiftBy: 6
+          };
+
+          var cats = kittydar.detectCats(canvas, options);
+          console.timeEnd("detecting", file)
 
           var missed = true;
-
-          console.log("testing", file);
 
           cats.forEach(function(cat) {
             var overlaps = doesOverlap(cat, rect);
@@ -66,7 +68,7 @@ function runTest() {
           });
 
           if (missed) {
-            misses++;
+            misses.push(file);
           }
 
           done();
@@ -74,8 +76,9 @@ function runTest() {
       })
     },
     function() {
-      console.log("misses", misses)
-      console.log("truePos", truePos, "falsePos", falsePos);
+      console.log("\nmisses", misses.length, "truePos", truePos, "falsePos", falsePos);
+
+      console.log("\nmisses", misses)
 
       var precision = truePos / (truePos + falsePos);
       console.log("precision", precision);

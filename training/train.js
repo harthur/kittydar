@@ -7,10 +7,16 @@ var fs = require("fs"),
     features = require("../features");
 
 
-testParams();
+testParams({
+  cellSize: 4
+});
 
 function testParams(params) {
   getCanvases(function(canvases) {
+    canvases = canvases.filter(function(canvas) {
+      return canvas.err === null;
+    });
+
     var data = canvases.map(function(canvas) {
       var fts = features.extractFeatures(canvas.canvas, params);
       return {
@@ -23,7 +29,7 @@ function testParams(params) {
     console.log("training on", data.length)
 
     var opts = {
-      hiddenLayers: [30]
+      hiddenLayers: [2]
     };
     var trainOpts = {
       errorThresh: 0.006,
@@ -67,7 +73,7 @@ function getCanvases(callback) {
     if (err) throw err;
 
     getDir(posDir, files, 1, function(posData) {
-      var negsDir = __dirname + "/NEGATIVES_TRAIN/";
+      var negsDir = __dirname + "/NEGATIVES_MIXED/";
       fs.readdir(negsDir, function(err, files) {
         if (err) throw err;
 
@@ -94,7 +100,7 @@ function getDir(dir, files, isCat, callback) {
     file = dir + file;
 
     utils.drawImgToCanvas(file, function(err, canvas) {
-      done(null, {canvas: canvas, file: file, isCat: isCat});
+      done(null, {canvas: canvas, file: file, isCat: isCat, err: err});
     });
   },
   function(err, canvases) {

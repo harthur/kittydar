@@ -1,18 +1,19 @@
 importScripts(
-  "bundle.js"
+  "bundle-6.js"
 );
 
 kittydar.setOptions({
-  resize: 400
+  threshold: 0.999,
+  scaleStep: 6,
+  shiftBy: 6
 })
 
 onmessage = function(event) {
   var resizes = event.data;
-  var minWindow = 48;
 
   var cats = [];
   resizes.forEach(function(resize) {
-    var detected = kittydar.detectAtFixed(resize.imagedata, resize.scale);
+    var detected = kittydar.detectAtScale(resize.imagedata, resize.scale);
     cats = cats.concat(detected);
 
     postProgress({
@@ -21,9 +22,9 @@ onmessage = function(event) {
     });
   });
 
-  cats = kittydar.combineOverlaps(cats);
+  cats = kittydar.combineOverlaps(cats, 0.25, 2);
 
-  postMessage({type: 'result', cats: cats});
+  postMessage({ type: 'result', cats: cats });
 }
 
 function postProgress(progress) {

@@ -6,10 +6,10 @@ var fs = require("fs"),
     features = require("../../features"),
     utils = require("../../utils");
 
-var trained = require("./network.json");
+var trained = require("./network-6.json");
 
-var dir = __dirname + "/NEGS_SAMPLED/";
-var minedDir = __dirname + "/NEGS_HARD/";
+var dir = __dirname + "/NEGS_SAMPLED2/";
+var minedDir = __dirname + "/NEGS_HARD2/";
 
 var start = 0;
 var count = 0;

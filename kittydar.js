@@ -1,7 +1,7 @@
 var brain = require("brain"),
     hog = require("hog-descriptor");
 
-var network = require("./network");
+var network = require("./network-6-final.js");
 var net = new brain.NeuralNetwork().fromJSON(network);
 
 if (process.arch) {
@@ -22,20 +22,30 @@ function createCanvas (width, height) {
 }
 
 var kittydar = {
-  minWindow: 48,
+  patchSize: 48,       // size of training images in px
 
-  resize: 360,
+  minSize: 48,         // starting window size
 
-  threshold: 0.999,
+  resize: 360,         // initial image resize size in px
+
+  threshold: 0.999,    // probablity threshold for classifying
+
+  scaleStep: 6,        // scaling step size in px
+
+  shiftBy: 6,         // px to slide window by
+
+  overlapThresh: 0.4,  // min overlap ratio to classify as an overlap
+
+  minOverlaps: 1,      // minumum overlapping rects to classify as a head
 
   detectCats: function(canvas, options) {
     this.setOptions(options || {});
 
-    var resizes = this.getAllSizes(canvas, this.minWindow);
+    var resizes = this.getAllSizes(canvas, this.minSize);
 
     var cats = [];
     resizes.forEach(function(resize) {
-      var kitties = kittydar.detectAtFixed(resize.imagedata, resize.scale);
+      var kitties = kittydar.detectAtScale(resize.imagedata, resize.scale);
       cats = cats.concat(kitties);
     });
     cats = this.combineOverlaps(cats);
@@ -44,12 +54,11 @@ var kittydar = {
   },
 
   setOptions: function(options) {
-    this.minWindow = options.minWindow || 48;
-    this.resize = options.resize || 360;
-    this.threshold = options.threshold || 0.99;
-    this.network = options.network || network;
+    for (var opt in options) {
+      this[opt] = options[opt];
+    }
     this.HOGparams = options.HOGparams || {
-      "cellSize": 4,
+      "cellSize": 6,
       "blockSize": 2,
       "blockStride": 1,
       "bins": 6,
@@ -57,12 +66,11 @@ var kittydar = {
     };
   },
 
-  getAllSizes: function(canvas, fixed) {
-    // for use with Worker threads, return canvas ImageDatas
+  getAllSizes: function(canvas, minSize) {
+    // For use with Worker threads, return canvas ImageDatas
     // resized to accomodate various window sizes
 
-    // smallest window size
-    fixed = fixed || this.minWindow;
+    minSize = minSize || this.minSize;
 
     // resize canvas to cut down on number of windows to check
     var resize = this.resize;
@@ -70,9 +78,9 @@ var kittydar = {
     var scale = Math.min(max, resize) / max;
 
     var resizes = [];
-    for (var size = fixed; size < max; size += 12) {
-      var winScale = (fixed / size) * scale;
-      var imagedata = this.resizeToFixed(canvas, winScale);
+    for (var size = minSize; size < max; size += this.scaleStep) {
+      var winScale = (minSize / size) * scale;
+      var imagedata = this.scaleCanvas(canvas, winScale);
 
       resizes.push({
         imagedata: imagedata,
@@ -83,11 +91,10 @@ var kittydar = {
     return resizes;
   },
 
-  resizeToFixed: function(canvas, scale) {
+  scaleCanvas: function(canvas, scale) {
     var width = Math.floor(canvas.width * scale);
     var height = Math.floor(canvas.height * scale);
 
-    // resize the image so the fixed size can mimic window size
     canvas = resizeCanvas(canvas, width, height);
     var ctx = canvas.getContext("2d");
     var imagedata = ctx.getImageData(0, 0, width, height);
@@ -96,31 +103,33 @@ var kittydar = {
   },
 
   isCat: function(vectors) {
-    var fts = hog.extractHOGFromVectors(vectors, this.HOGparams);
-    var prob = net.runInput(fts)[0];
+    var features = hog.extractHOGFromVectors(vectors, this.HOGparams);
+
+    var prob = net.runInput(features)[0];
     return prob;
   },
 
-  detectAtFixed: function(imagedata, scale, fixed) {
+  detectAtScale: function(imagedata, scale) {
     // Detect using a sliding window of a fixed size.
-    // Take an ImageData instead of canvas so that this can be
-    // used from a Worker thread.
-    fixed = fixed || this.minWindow;
     var vectors = hog.gradientVectors(imagedata);
-    var shift = 6;
     var cats = [];
 
-    for (var y = 0; y + fixed < imagedata.height; y += shift) {
-      for (var x = 0; x + fixed < imagedata.width; x += shift) {
-        var win = getRect(vectors, x, y, fixed, fixed);
+    var width = imagedata.width,
+        height = imagedata.height;
+
+    var size = this.patchSize;
+
+    for (var y = 0; y + size < height; y += this.shiftBy) {
+      for (var x = 0; x + size < width; x += this.shiftBy) {
+        var win = getRect(vectors, x, y, size, size);
         var prob = this.isCat(win);
 
         if (prob > this.threshold) {
           cats.push({
             x: Math.floor(x / scale),
             y: Math.floor(y / scale),
-            width: Math.floor(fixed / scale),
-            height: Math.floor(fixed / scale),
+            width: Math.floor(size / scale),
+            height: Math.floor(size / scale),
             prob: prob
           });
         }
@@ -131,8 +140,8 @@ var kittydar = {
 
   combineOverlaps: function(rects, overlap, min) {
     // non-maximum suppression - remove overlapping rects
-    overlap = overlap || 0.5;
-    min = min || 0;
+    overlap = overlap || this.overlapThresh;
+    min = min || this.minOverlaps;
 
     for (var i = 0; i < rects.length; i++) {
       var r1 = rects[i];
@@ -182,6 +191,8 @@ function resizeCanvas(canvas, width, height) {
 }
 
 function doesOverlap(r1, r2, overlap) {
+  overlap = overlap || 0.5;
+
   var overlapW, overlapH;
   if (r1.x > r2.x) {
     overlapW = Math.min((r2.x + r2.width) - r1.x, r1.width);
@@ -203,7 +214,7 @@ function doesOverlap(r1, r2, overlap) {
   var intersect = overlapW * overlapH;
   var union = (r1.width * r1.height) + (r2.width * r2.height) - (intersect * 2);
 
-  if (intersect / union > 0.5) {
+  if (intersect / union > overlap) {
     return true;
   }
   return false;

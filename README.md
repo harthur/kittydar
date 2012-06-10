@@ -29,7 +29,7 @@ Kittydar will give an approximate rectangle around the cat's head. Each rectangl
 
 Kittydar will miss cats sometimes, and sometimes classify non-cats as cats. It's best at detecting upright cats that are facing forward, but it can handle a small tilt or turn in the head.
 
-Kittydar isn't fast. This is just a first-pass attempt and will hopefully improve in the future.
+Kittydar isn't fast. It'll take a few seconds to find the cats in one image. This is just a first-pass attempt and will hopefully improve in the future.
 
 # How it works
 
@@ -41,4 +41,6 @@ The neural network (the JSON of which is located in this repo) has been pre-trai
 
 * This informative reasearch paper: [Cat Head Detection - How to Effectively Exploit Shape and Texture Features](http://research.microsoft.com/pubs/80582/ECCV_CAT_PROC.pdf) by Weiwei Zhang, Jian Sun, and Xiaoou Tang
 
-* This sent-from-the-heavens [dataset of cat images](http://137.189.35.203/WebUI/CatDatabase/catData.html) annotated with the locations of the cat heads.
+* This off the hook [dataset of cat images](http://137.189.35.203/WebUI/CatDatabase/catData.html) annotated with the locations of the cat heads.
+
+* [@gdeglin](http://github.com/gdeglin) for the name.

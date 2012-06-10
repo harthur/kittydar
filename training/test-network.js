@@ -1,15 +1,16 @@
 var fs = require("fs"),
-    brain = require("brain"),
     path = require("path"),
+    brain = require("brain"),
     async = require("async"),
     _ = require("underscore"),
-    utils = require("../utils"),
-    features = require("../features");
+    features = require("../features"),
+    utils = require("../utils");
 
-console.log("training with random negatives");
-trainNetwork()
+testNetwork({
+  cellSize: 4
+})
 
-function trainNetwork(params) {
+function testNetwork(params) {
   getCanvases(function(canvases) {
     canvases = canvases.filter(function(canvas) {
       return !canvas.err;
@@ -27,46 +28,37 @@ function trainNetwork(params) {
       return Math.random();
     });
 
-    console.log(data[0].input.length)
+    console.log("testing with", data.length);
 
-    console.log("training with", data.length);
+    var json = require("./network-4-big.json")
+    var network = new brain.NeuralNetwork().fromJSON(json);
+    var stats = network.test(data);
 
-    var opts = {
-      hiddenLayers: [30]
-    };
-    var trainOpts = {
-      errorThresh: 0.007,
-      log: true
-    };
+    console.log(stats.error, "error");
+    console.log(stats.precision, "precision")
+    console.log(stats.recall, "recall")
+    console.log(stats.accuracy, "accuracy")
 
-    var network = new brain.NeuralNetwork(opts);
-
-    var stats = network.train(data, trainOpts);
-
-    console.log("stats:", stats);
-    console.log("parameters:", opts);
-
-    var json = JSON.stringify(network.toJSON(), 4)
-
-    fs.writeFile('network-6.json', json, function (err) {
-      if (err) throw err;
-      console.log('saved network to network-6.json');
-    });
+    console.log(stats.truePos, "true positives");
+    console.log(stats.trueNeg, "true negatives");
+    console.log(stats.falsePos, "false positives");
+    console.log(stats.falseNeg, "false negatives");
+    console.log(stats.total, "total");
   })
 }
 
 function getCanvases(callback) {
-  var posDir = __dirname + "/POSITIVES_TRAIN/";
+  var posDir = __dirname + "/POSITIVES_TEST/";
 
   fs.readdir(posDir, function(err, files) {
     if (err) throw err;
 
-    getDir(posDir, files, 1, 0, 5000, function(posData) {
-      var negsDir = __dirname + "/NEGATIVES_TRAIN/";
+    getDir(posDir, files, 1, 0, 8000, function(posData) {
+      var negsDir = __dirname + "/NEGATIVES_TEST/";
       fs.readdir(negsDir, function(err, files) {
         if (err) throw err;
 
-        getDir(negsDir, files, 0, 0, 5000, function(negData) {
+        getDir(negsDir, files, 0, 0, 6000, function(negData) {
           var data = posData.concat(negData);
 
           callback(data);
