@@ -1,0 +1,58 @@
+<html>
+<head>
+  <link rel="stylesheet" href="index.css"/>
+
+  <script src="jquery.js"></script>
+  <script src="demo.js"></script>
+  <script src="kittydar-0.1.0.js"></script>
+  <script src="bootstrap-dropdown.js"></script>
+</head>
+<body>
+  <div id="container">
+    <header>
+      <div id="title" title="Cats Alphabet by Manfred Klein">
+        kittydar
+      </div>
+      <div id="subtitle">
+        Face detection for cats
+      </div>
+    </header>
+    <div id="viewer-container">
+      <div id="viewer">
+        <div id="droparea-text">
+          Drag an image here to find cats.
+        </div>
+        <canvas id="preview">
+        </canvas>
+        <canvas id="annotations">
+        </canvas>
+      </div>
+
+      <div id="example-chooser">
+        <div id="thumbs">
+          <img class="example-thumb" src="images/cat1.jpg"></img>
+          <img class="example-thumb" src="images/cat2.jpg"></img>
+          <img class="example-thumb" src="images/cat3.jpg"></img>
+          <img class="example-thumb" src="images/cat4.jpg"></img>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="progress">
+  </div>
+
+  <footer>
+    <div id="select-button">
+      test images
+    </div>
+    <div id="note">
+      kittydar is best at detecting upright cats that are facing forward
+    </div>
+  </footer>
+
+  <div id="drawing" hidden=true>1</div>
+
+<a href="http://github.com/harthur/kittydar"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+</body>
+</html>
