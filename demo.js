@@ -182,10 +182,5 @@ var detector = {
     console.log(progress);
     this.paintRects(progress.rects, "orange");
     $("#progress").text("detecting at " + progress.size + "px...");
-
-    /*
-      var completed = progress.iterations / trainer.iterations * 100;
-      $("#progress-completed").css("width", completed + "%");
-    */
   }
 }
