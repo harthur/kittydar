@@ -1,6 +1,6 @@
 {
    "name": "kittydar",
-   "description": "Cat detector",
+   "description": "Cat detection",
    "version": "0.1.0",
    "author": "Heather Arthur <fayearthur@gmail.com>",
    "repository": {
@@ -8,7 +8,7 @@
       "url": "http://github.com/harthur/kittydar.git"
    },
    "dependencies" : {
-      "canvas" : ">=0.10.0",
+      "canvas" : ">=0.10.0"
    },
    "main": "./kittydar"
 }

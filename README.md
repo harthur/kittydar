@@ -41,7 +41,7 @@ Kittydar will miss cats sometimes, and sometimes classify non-cats as cats. It's
 
 Kittydar isn't fast. It'll take a few seconds to find the cats in one image. There's lots of room for improvement, so fork and send requests.
 
-## Propers
+### Propers
 
 * This informative reasearch paper: [Cat Head Detection - How to Effectively Exploit Shape and Texture Features](http://research.microsoft.com/pubs/80582/ECCV_CAT_PROC.pdf) by Weiwei Zhang, Jian Sun, and Xiaoou Tang
 
