@@ -44,9 +44,9 @@ function runTest() {
           console.time("detecting")
           var options = {
             scaleStep: 6,
-            overlapThresh: 0.2,
-            minOverlaps: 2,
-            shiftBy: 6
+            overlapThresh: 0.3,
+            minOverlaps: 1,
+            shiftBy: 8
           };
 
           var cats = kittydar.detectCats(canvas, options);

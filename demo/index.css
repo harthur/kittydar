@@ -1,5 +1,5 @@
 body {
-  font-family: Helvetica Neue, sans-serif;
+  font-family: Helvetica Neue, Helvetica, Tahoma, sans-serif;
 }
 
 #title {
@@ -12,7 +12,7 @@ body {
   font-size: 44px;
 }
 
-#subtitle {
+#subtitle, footer {
   font-family: Monaco, Menlo, Tahoma, sans-serif;
   margin-top: 20px;
 }
@@ -23,9 +23,38 @@ body {
   text-align: center;
 }
 
+#example-chooser {
+  padding: 20px;
+}
+
+#button-box {
+  display: inline-block;
+}
+
+#example-chooser {
+  background-color: white;
+  z-index: 1;
+  position: absolute;
+  border: 4px solid #CCC;
+  border-radius: 3px;
+}
+
+.example-thumb {
+  width: 48px;
+  height: 48px;
+  border: 3px solid #AAA;
+  border-radius: 2px;
+  cursor: pointer;
+  margin-left: 6px;
+}
+
+#viewer-container {
+  width: 500px;
+  margin: 60px auto 30px auto;
+}
+
 #viewer {
   position: relative;
-  margin: 60px auto 30px auto;
   width: 500px;
   height: 240px;
   border: 4px dashed #ccc;
@@ -71,6 +100,46 @@ body {
 #drawing {
   font-family: CatsAlphabet;
   font-size: 42px;
+}
+
+.button {
+  background-color: #E2E2E2;
+  box-shadow: #EEE 0 .15em 0.6em;
+  border: 1px solid #CCC;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: inline-block;
+}
+
+.button:active {
+  background-color: #CCC !important;
+}
+
+footer {
+  margin-top: 100px;
+  text-align: center;
+  font-size: 13px;
+  text-align: center;
+  color: grey;
+}
+
+#select-button {
+  font-size: 13px;
+  color: grey;
+  cursor: pointer;
+}
+
+#select-button:hover {
+  color: black;
+}
+
+#select-button:after {
+  content: ">";
+}
+
+#note {
+  margin-top: 20px;
 }
 
 @font-face {

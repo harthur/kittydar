@@ -34,5 +34,5 @@ def getPage(page)
 end
 
 120.times do |i|
-  getPage((i * 7))
+  getPage(i)
 end

@@ -8,7 +8,7 @@ var http = require("http"),
     utils = require("../../utils");
 
 var dir = __dirname + "/NEGS_FLICKR/";
-var outdir = __dirname + "/NEGS_SAMPLED2/";
+var outdir = __dirname + "/NEGS_SAMPLED3/";
 
 var part = parseInt(process.argv[2]);
 
@@ -35,7 +35,7 @@ fs.readdir(dir, function(err, files) {
     var canvases = generateFromRaw(canvas);
 
     canvases.forEach(function(canvas) {
-      var name = Math.floor(Math.random() * 1000000000);
+      var name = Math.floor(Math.random() * 10000000000);
       var file = outdir + name + ".jpg";
 
       utils.writeCanvasToFile(canvas, file, function() {

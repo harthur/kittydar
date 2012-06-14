@@ -6,13 +6,14 @@ var fs = require("fs"),
     features = require("../../features"),
     utils = require("../../utils");
 
-var trained = require("./network-6.json");
+var trained = require("../network-6-random.json");
 
-var dir = __dirname + "/NEGS_SAMPLED2/";
-var minedDir = __dirname + "/NEGS_HARD2/";
+var dir = __dirname + "/NEGS_SAMPLED/";
+var minedDir = __dirname + "/NEGS_HARD1_RAND/";
 
-var start = 0;
-var count = 0;
+var params = {
+  cellSize: 6
+}
 
 var part = parseInt(process.argv[2]);
 
@@ -53,7 +54,7 @@ function saveFalsePos(canvases) {
   });
 
   var data = canvases.map(function(canvas) {
-    var fts = features.extractFeatures(canvas.canvas);
+    var fts = features.extractFeatures(canvas.canvas, params);
     return {
       file: canvas.file,
       input: fts,

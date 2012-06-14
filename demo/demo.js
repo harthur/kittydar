@@ -1,4 +1,30 @@
 $(document).ready(function() {
+  $("#example-chooser").hide();
+
+  $("#select-button").on("mouseover", function(event) {
+     $(event.target).css({cursor: "pointer"})
+  })
+
+  $("#select-button").click(function(event) {
+    $("#example-chooser").toggle();
+    $("#example-chooser").css({
+      left: event.pageX + 50,
+      top: event.pageY - 50
+    });
+    console.log(event.target.screenX)
+  });
+
+  $('.example-thumb').click(function(event) {
+    // reload to get full size
+    var img = new Image();
+    img.onload = function() {
+      detectImage(img);
+    }
+    img.src = event.target.src;
+
+    $("#example-chooser").hide()
+  })
+
   var viewer = $("#viewer");
 
   viewer.on('dragover', function(e) {
@@ -27,7 +53,14 @@ $(document).ready(function() {
     handleFiles(files);
     return false;
   });
+
 });
+
+function detectImage(img) {
+  drawToCanvas(img);
+  detector.abortCurrent();
+  detector.detectCats();
+}
 
 function handleFiles(files) {
   var file = files[0];
@@ -42,9 +75,7 @@ function handleFiles(files) {
   var reader = new FileReader();
   reader.onload = function(e) {
     img.onload = function() {
-      drawToCanvas(img);
-      detector.abortCurrent();
-      detector.detectCats();
+      detectImage(img);
     }
     $("#progress").text("loading image...");
     img.src = e.target.result;
@@ -63,6 +94,7 @@ function drawToCanvas(img) {
   width *= scale;
   height *= scale;
 
+  $("#viewer-container").width(width).height(height);
   $("#viewer").width(width).height(height);
 
   var anno = $("#annotations").get(0);

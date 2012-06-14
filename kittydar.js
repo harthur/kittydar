@@ -1,7 +1,7 @@
 var brain = require("brain"),
     hog = require("hog-descriptor");
 
-var network = require("./network-6-final.js");
+var network = require("./networks/network-june13-7.json");
 var net = new brain.NeuralNetwork().fromJSON(network);
 
 if (process.arch) {
