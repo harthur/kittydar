@@ -1,7 +1,7 @@
 var brain = require("brain"),
     hog = require("hog-descriptor");
 
-var network = require("./networks/network-6-final.js");
+var network = require("./network.js");
 
 var net = new brain.NeuralNetwork().fromJSON(network);
 
@@ -12,9 +12,11 @@ if (process.arch) {
 
 function createCanvas (width, height) {
   if (typeof Canvas !== 'undefined') {
+    // have node-canvas
     return new Canvas(width, height);
   }
   else {
+    // in browser
     var canvas = document.createElement('canvas');
     canvas.setAttribute('width', width);
     canvas.setAttribute('height', height);

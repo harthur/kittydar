@@ -41,7 +41,8 @@ function runTest() {
         };
 
         utils.drawImgToCanvas(file, function(err, canvas) {
-          console.time("detecting")
+          console.time("detecting");
+
           var options = {
             scaleStep: 6,
             overlapThresh: 0.3,
