@@ -10,8 +10,9 @@ console.log("there are", cats.length, "cats in this photo");
 console.log(cats[0]);
 
 // { x: 30, y: 200, width: 140, height: 140 }
-
 ```
+
+[Kittydar demo](http://harthur.github.com/kittydar)
 
 # Install
 
