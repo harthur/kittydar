@@ -5,7 +5,7 @@ Kittydar is short for kitty radar. Kittydar takes an image (canvas) and tells yo
 ```javascript
 var cats = kittydar.detectCats(canvas);
 
-console.log("there are", cats.length, "cats in this photo");
+console.log("there are ", cats.length, " cats in this photo");
 
 console.log(cats[0]);
 
