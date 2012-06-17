@@ -3,7 +3,7 @@ importScripts(
 );
 
 kittydar.setOptions({
-  threshold: 0.999,
+  threshold: 0.9999,
   scaleStep: 6,
   shiftBy: 6
 })
