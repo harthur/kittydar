@@ -1,12 +1,6 @@
 importScripts(
-  "kittydar-0.1.0.js"
+  "kittydar-0.1.1.js"
 );
-
-kittydar.setOptions({
-  threshold: 0.9999,
-  scaleStep: 6,
-  shiftBy: 6
-})
 
 onmessage = function(event) {
   var resizes = event.data;
