@@ -43,14 +43,7 @@ function runTest() {
         utils.drawImgToCanvas(file, function(err, canvas) {
           console.time("detecting");
 
-          var options = {
-            scaleStep: 6,
-            overlapThresh: 0.3,
-            minOverlaps: 1,
-            shiftBy: 8
-          };
-
-          var cats = kittydar.detectCats(canvas, options);
+          var cats = kittydar.detectCats(canvas);
           console.timeEnd("detecting", file)
 
           var missed = true;
@@ -65,7 +58,6 @@ function runTest() {
             else {
               falsePos++;
             }
-            saveCrop(canvas, cat, overlaps);
           });
 
           if (missed) {

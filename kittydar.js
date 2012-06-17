@@ -31,15 +31,23 @@ var kittydar = {
 
   resize: 360,         // initial image resize size in px
 
-  threshold: 0.999,    // probablity threshold for classifying
+  threshold: 0.9999,   // probablity threshold for classifying
 
   scaleStep: 6,        // scaling step size in px
 
-  shiftBy: 6,         // px to slide window by
+  shiftBy: 6,          // px to slide window by
 
-  overlapThresh: 0.4,  // min overlap ratio to classify as an overlap
+  overlapThresh: 0.3,  // min overlap ratio to classify as an overlap
 
-  minOverlaps: 1,      // minumum overlapping rects to classify as a head
+  minOverlaps: 2,      // minumum overlapping rects to classify as a head
+
+  HOGparams: {         // parameters for HOG descriptor
+    cellSize: 6,
+    blockSize: 2,
+    blockStride: 1,
+    bins: 6,
+    norm: "L2"
+  },
 
   detectCats: function(canvas, options) {
     this.setOptions(options || {});
@@ -60,13 +68,6 @@ var kittydar = {
     for (var opt in options) {
       this[opt] = options[opt];
     }
-    this.HOGparams = options.HOGparams || {
-      "cellSize": 6,
-      "blockSize": 2,
-      "blockStride": 1,
-      "bins": 6,
-      "norm": "L2"
-    };
   },
 
   getAllSizes: function(canvas, minSize) {
