@@ -124,6 +124,10 @@ footer {
   color: grey;
 }
 
+footer a {
+  color: grey;
+}
+
 #select-button {
   font-size: 13px;
   color: grey;
@@ -139,7 +143,11 @@ footer {
 }
 
 #note {
-  margin-top: 20px;
+  margin-top: 24px;
+}
+
+#js-note {
+  margin-top: 6px;
 }
 
 @font-face {
