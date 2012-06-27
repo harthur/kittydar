@@ -20,7 +20,7 @@ function runTest() {
     if (err) throw err;
 
     var images = files.filter(function(file) {
-      return path.extname(file) == ".jpg";
+      return path.extname(file) == ".png";
     })
 
     async.forEach(images, function(file, done) {

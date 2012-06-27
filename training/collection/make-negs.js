@@ -1,7 +1,6 @@
 var http = require("http"),
     url = require("url"),
     fs = require("fs"),
-    async = require("async"),
     path = require("path"),
     Canvas = require("canvas"),
     _ = require("underscore"),
