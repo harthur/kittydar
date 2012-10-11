@@ -1,5 +1,6 @@
 var brain = require("brain"),
-    hog = require("hog-descriptor");
+    hog = require("hog-descriptor"),
+    nms = require("./nms");
 
 var network = require("./network.js");
 
@@ -59,7 +60,7 @@ var kittydar = {
       var kitties = kittydar.detectAtScale(resize.imagedata, resize.scale);
       cats = cats.concat(kitties);
     });
-    cats = this.combineOverlaps(cats);
+    cats = nms.combineOverlaps(cats, params.overlapThresh, params.minOverlaps);
 
     return cats;
   },
@@ -140,36 +141,6 @@ var kittydar = {
       }
     }
     return cats;
-  },
-
-  combineOverlaps: function(rects, overlap, min) {
-    // non-maximum suppression - remove overlapping rects
-    overlap = overlap || this.overlapThresh;
-    min = min || this.minOverlaps;
-
-    for (var i = 0; i < rects.length; i++) {
-      var r1 = rects[i];
-      r1.tally = 0; // number of rects it's suppressed
-
-      for (var j = 0; j < i; j++) {
-            r2 = rects[j];
-
-        if (doesOverlap(r1, r2)) {
-          if (r1.prob > r2.prob) {
-            r2.suppressed = true;
-            r1.tally += 1 + r2.tally;
-          }
-          else {
-            r1.suppressed = true;
-            r2.tally += 1 + r1.tally;
-          }
-        }
-      }
-    }
-    // only take a rect if it wasn't suppressed by any other rect
-    return rects.filter(function(rect) {
-      return !rect.suppressed && rect.tally >= min;
-    })
   }
 }
 
@@ -194,34 +165,18 @@ function resizeCanvas(canvas, width, height) {
   return resizeCanvas;
 }
 
-function doesOverlap(r1, r2, overlap) {
-  overlap = overlap || 0.5;
-
-  var overlapW, overlapH;
-  if (r1.x > r2.x) {
-    overlapW = Math.min((r2.x + r2.width) - r1.x, r1.width);
+function createCanvas (width, height) {
+  if (typeof Canvas !== 'undefined') {
+    // have node-canvas
+    return new Canvas(width, height);
   }
   else {
-    overlapW = Math.min((r1.x + r1.width) - r2.x, r2.width);
+    // in browser
+    var canvas = document.createElement('canvas');
+    canvas.setAttribute('width', width);
+    canvas.setAttribute('height', height);
+    return canvas;
   }
-
-  if (r1.y > r2.y) {
-    overlapH = Math.min((r2.y + r2.height) - r1.y, r1.height);
-  }
-  else {
-    overlapH = Math.min((r1.y + r1.height) - r2.y, r2.height);
-  }
-
-  if (overlapW <= 0 || overlapH <= 0) {
-    return false;
-  }
-  var intersect = overlapW * overlapH;
-  var union = (r1.width * r1.height) + (r2.width * r2.height) - (intersect * 2);
-
-  if (intersect / union > overlap) {
-    return true;
-  }
-  return false;
 }
 
 
