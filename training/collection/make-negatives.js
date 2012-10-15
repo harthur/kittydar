@@ -1,61 +1,65 @@
-var http = require("http"),
-    url = require("url"),
-    fs = require("fs"),
+var fs = require("fs"),
     path = require("path"),
+    nomnom = require("nomnom"),
     Canvas = require("canvas"),
-    _ = require("underscore"),
     utils = require("../../utils");
 
-var dir = __dirname + "/NEGS_FLICKR/";
-var outdir = __dirname + "/NEGS_SAMPLED3/";
+var opts = nomnom.options({
+  indir: {
+    position: 0,
+    default: __dirname + "/NEGS_FLICKR/",
+    help: "Directory of full-sizes negative images"
+  },
+  outdir: {
+    position: 1,
+    default: __dirname + "/NEGATIVES/",
+    help: "Directory to save cropped image sections"
+  }
+}).colors().parse();
 
-var part = parseInt(process.argv[2]);
 
-var perFile = 1;
-
-fs.readdir(dir, function(err, files) {
+fs.readdir(opts.indir, function(err, files) {
   if (err) throw err;
 
   var images = files.filter(function(file) {
     return path.extname(file) == ".jpg";
   });
 
-  images = images.slice(9500 * part, 9500 * (part + 1));
-  console.log(images.length);
+  console.log(images.length, "images to process");
 
   images.forEach(function(image) {
+    var file = opts.indir + "/" + image;
     try {
-      var canvas = utils.drawImgToCanvasSync(dir + image);
+      var canvas = utils.drawImgToCanvasSync(file);
     }
     catch(e) {
-      console.log(e, dir + image);
+      console.log(e, file);
       return;
     }
-    var canvases = generateFromRaw(canvas);
+    var canvases = extractSamples(canvas);
 
     canvases.forEach(function(canvas) {
       var name = Math.floor(Math.random() * 10000000000);
-      var file = outdir + name + ".jpg";
+      var file = opts.outdir + "/" + name + ".jpg";
 
-      utils.writeCanvasToFile(canvas, file, function() {
-        console.log("wrote to", file)
-      });
+      utils.writeCanvasToFileSync(canvas, file);
     });
   });
 })
 
-function generateFromRaw(canvas) {
+function extractSamples(canvas, num) {
   var min = 48;
   var max = Math.min(canvas.width, canvas.height);
 
-  var canvases = _.range(0, perFile).map(function() {
+  var canvases = [];
+  for (var i = 0; i < num; i++) {
     var length = Math.max(48, Math.ceil(Math.random() * max));
 
     var x = Math.floor(Math.random() * (max - length));
     var y = Math.floor(Math.random() * (max - length));
 
-    return cropCanvas(canvas, x, y, length, length);
-  })
+    canvases.push(cropCanvas(canvas, x, y, length, length));
+  }
   return canvases;
 }
 
