@@ -20,8 +20,12 @@ function runTest() {
     if (err) throw err;
 
     var images = files.filter(function(file) {
-      return path.extname(file) == ".png";
+      return path.extname(file) == ".jpg";
     })
+
+    images = images.slice(0, 3);
+
+    console.log(images);
 
     async.forEach(images, function(file, done) {
       file = dir + file;

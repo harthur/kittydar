@@ -1,9 +1,7 @@
 var fs = require("fs"),
     path = require("path"),
-    async = require("async"),
     nomnom = require("nomnom"),
     Canvas = require("canvas"),
-    cropper = require("./cropper"),
     utils = require("../../utils");
 
 var opts = nomnom.options({
