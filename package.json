@@ -1,16 +1,19 @@
 {
-   "name": "kittydar",
-   "description": "Cat detection",
-   "version": "0.1.2",
-   "author": "Heather Arthur <fayearthur@gmail.com>",
-   "repository": {
-      "type": "git",
-      "url": "http://github.com/harthur/kittydar.git"
-   },
-   "dependencies" : {
-      "canvas" : "~0.10.0",
-      "brain" : "~0.6.0",
-      "hog-descriptor" : "~0.4.0"
-   },
-   "main": "./kittydar"
+  "name": "kittydar",
+  "description": "Cat detection",
+  "version": "0.1.2",
+  "author": "Heather Arthur <fayearthur@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/harthur/kittydar.git"
+  },
+  "dependencies" : {
+    "canvas" : "~0.13.1",
+    "brain" : "~0.6.0",
+    "hog-descriptor" : "~0.4.0"
+  },
+  "devDependencies" : {
+    "nomnom" : "~1.5.2"
+  },
+  "main": "./kittydar"
 }

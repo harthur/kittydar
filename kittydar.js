@@ -6,7 +6,7 @@ if (process.arch) {   // in node
   var Canvas = (require)('canvas');
 }
 
-var network = require("./network.json");
+var network = require("./network.js");
 var net = new brain.NeuralNetwork().fromJSON(network);
 
 var params = {

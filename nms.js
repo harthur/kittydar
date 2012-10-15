@@ -18,7 +18,6 @@ exports.combineOverlaps = combineOverlaps;
  * to be included in the final returned set.
  */
 function combineOverlaps(rects, minRatio, minOverlaps) {
-  console.log(minRatio, minOverlaps);
   minRatio = minRatio || 0.5;
   minOverlaps = minOverlaps || 1;
 
