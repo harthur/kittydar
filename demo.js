@@ -9,17 +9,6 @@ $(document).ready(function() {
     });
   });
 
-  $('.example-thumb').click(function(event) {
-    // reload to get full size
-    var img = new Image();
-    img.onload = function() {
-      detectImage(img);
-    }
-    img.src = event.target.src;
-
-    $("#example-chooser").hide()
-  })
-
   var viewer = $("#viewer");
 
   viewer.on('dragover', function(e) {
@@ -44,12 +33,42 @@ $(document).ready(function() {
     e.preventDefault();
     viewer.removeClass('dragover');
 
+    var dataTransfer = e.originalEvent.dataTransfer;
+
+    var src = dataTransfer.getData("x-kittydar/url");
+    if (src) {
+      detectFromUrl(src);
+      $("#example-chooser").hide();
+    }
+
     var files = e.originalEvent.dataTransfer.files;
-    handleFiles(files);
+    if (files.length) {
+      detectFromFiles(files);
+    }
+
     return false;
   });
 
+  var examples = $('.example-thumb')
+
+  examples.click(function(event) {
+    // reload to get full size image
+    detectFromUrl(event.target.src);
+    $("#example-chooser").hide();
+  })
+
+  examples.on('dragstart', function(e) {
+    e.originalEvent.dataTransfer.setData('x-kittydar/url', this.src);
+  });
 });
+
+function detectFromUrl(src) {
+  var img = new Image();
+  img.onload = function() {
+    detectImage(img);
+  }
+  img.src = src;
+}
 
 function detectImage(img) {
   drawToCanvas(img);
@@ -57,7 +76,7 @@ function detectImage(img) {
   detector.detectCats();
 }
 
-function handleFiles(files) {
+function detectFromFiles(files) {
   var file = files[0];
   var imageType = /image.*/;
 
