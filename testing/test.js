@@ -1,84 +1,129 @@
-var brain = require("brain"),
-    fs = require("fs"),
+var fs = require("fs"),
     path = require("path"),
+    util = require("util"),
     async = require("async"),
-    utils = require("../utils"),
+    nomnom = require("nomnom"),
     Canvas = require("canvas"),
+    color = require("colors"),
+    charm = require("charm")(),
+    utils = require("../utils"),
+    nms = require("../nms"),
     kittydar = require("../kittydar");
 
-var dir = __dirname + "/TEST/";
+charm.pipe(process.stdout);
+
+var opts = nomnom.options({
+  dir: {
+    default: __dirname + "/TEST/",
+    help: "directory of images to test"
+  }
+}).parse();
+
+var truePos = 0;
+var falsePos = 0;
+var misses = [];
+var finds = [];
+var results = [];
+var total;
+
+var totalTime;
 
 runTest();
 
 function runTest() {
-  var truePos = 0;
-  var falsePos = 0;
-  var misses = [];
-  var total = 0;
-
-  fs.readdir(dir, function(err, files) {
+  fs.readdir(opts.dir, function(err, files) {
     if (err) throw err;
 
     var images = files.filter(function(file) {
-      return path.extname(file) == ".png";
+      return path.extname(file) == ".jpg";
     })
 
-    async.forEach(images, function(file, done) {
-      file = dir + file;
+    images = images.slice(0, 4);
 
-      fs.readFile(file + ".rect", "utf-8", function(err, text) {
-        if (err) throw err;
+    total = images.length;
 
-        var vals = text.split(" ").map(function(val) {
-          return parseInt(val)
-        })
-
-        var rect = {
-          x: vals[0],
-          y: vals[1],
-          width: vals[2],
-          height: vals[3]
-        };
-
-        utils.drawImgToCanvas(file, function(err, canvas) {
-          console.time("detecting");
-
-          var cats = kittydar.detectCats(canvas);
-          console.timeEnd("detecting", file)
-
-          var missed = true;
-
-          cats.forEach(function(cat) {
-            var overlaps = doesOverlap(cat, rect);
-
-            if (overlaps) {
-              missed = false;
-              truePos++;
-            }
-            else {
-              falsePos++;
-            }
-          });
-
-          if (missed) {
-            misses.push(file);
-          }
-
-          done();
-        });
-      })
-    },
-    function() {
-      console.log("\nmisses", misses.length, "truePos", truePos, "falsePos", falsePos);
-
-      console.log("\nmisses", misses)
-
-      var precision = truePos / (truePos + falsePos);
-      console.log("precision", precision);
-
-      var fpr = falsePos / (total - truePos);
-    });
+    printDots();
+    async.forEach(images, testImage, printResults);
   });
+}
+
+function printResults() {
+  console.log("\n\ntrue positives:  ", truePos);
+  console.log("false negatives: ", misses.length);
+  console.log("false positives: ", falsePos);
+
+  console.log("\nfound:\n", finds);
+  console.log("\nmisses:\n", misses);
+}
+
+function testImage(file, callback) {
+  file = opts.dir + file;
+
+  fs.readFile(file + ".cat", "utf-8", function(err, text) {
+    if (err) throw err;
+
+    var vals = text.split(" ").map(function(val) {
+      return parseInt(val)
+    })
+
+    var rect = {
+      x: vals[0],
+      y: vals[1],
+      width: vals[2],
+      height: vals[3]
+    };
+
+    utils.drawImgToCanvas(file, function(err, canvas) {
+      // todo: detect time
+      var cats = kittydar.detectCats(canvas);
+
+      var found = false;
+      cats.forEach(function(cat) {
+        var overlaps = doesOverlap(cat, rect);
+        if (overlaps) {
+          found = true;
+          truePos++;
+        }
+        else {
+          falsePos++;
+        }
+      });
+
+      if (found) {
+        finds.push(file);
+        results.push("pass")
+      }
+      else {
+        misses.push(file);
+        results.push("fail");
+      }
+      printDots();
+
+      callback();
+    });
+  })
+}
+
+function printDots() {
+  charm.erase("start");
+  charm.move(-total, 0);
+
+  var str = "";
+  for (var i = 0; i < results.length; i++) {
+    if (results[i] == "pass") {
+      str += "•".green.bold;
+    }
+    else  {
+      str += "•".red.bold;
+    }
+  }
+  var rest = total - results.length;
+
+  for (var i = 0; i < rest; i++) {
+    str += "·".grey;
+  }
+  charm.write(str);
+  charm.down(1);
 }
 
 function saveCrop(canvas, cat, isTrue) {
