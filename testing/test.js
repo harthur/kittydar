@@ -104,7 +104,7 @@ function testImage(image, callback) {
 
       var found = false;
       cats.forEach(function(cat) {
-        var overlaps = doesOverlap(cat, rect);
+        var overlaps = nms.doesOverlap(cat, rect);
         if (overlaps) {
           found = true;
           truePos++;
@@ -158,33 +158,4 @@ function printDots() {
 
   // hide the cursor when printing the dots
   charm.cursor(false);
-}
-
-function doesOverlap(cat, rect) {
-  var overlapW, overlapH;
-
-  if (cat.x > rect.x) {
-    overlapW = Math.min((rect.x + rect.width) - cat.x, cat.width);
-  }
-  else {
-    overlapW = Math.min((cat.x + cat.width) - rect.x, rect.width);
-  }
-
-  if (cat.y > rect.y) {
-    overlapH = Math.min((rect.y + rect.height) - cat.y, cat.height);
-  }
-  else {
-    overlapH = Math.min((cat.y + cat.height) - rect.y, rect.height);
-  }
-
-  if (overlapW <= 0 || overlapH <= 0) {
-    return false;
-  }
-  var intersect = overlapW * overlapH;
-  var union = (cat.width * cat.height) + (rect.width * rect.height) - (intersect * 2);
-
-  if (intersect / union > 0.5) {
-    return true;
-  }
-  return false;
 }

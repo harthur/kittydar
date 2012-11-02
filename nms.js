@@ -1,6 +1,7 @@
 /* non-maximum suppression - combine overlapping rects into the strongest one */
 
 exports.combineOverlaps = combineOverlaps;
+exports.doesOverlap = doesOverlap;
 
 /* rects is an array of objects that look like:
  *  {
@@ -10,7 +11,7 @@ exports.combineOverlaps = combineOverlaps;
  *    height: // height of rect,
  *    prob: // the higher, the more likely it will suppress other rects
  *  }
- * 
+ *
  * minRatio is the min ratio of intersection area to union area of two rects
  * to qualify them as overlapping.
  *
@@ -47,6 +48,8 @@ function combineOverlaps(rects, minRatio, minOverlaps) {
 }
 
 function doesOverlap(r1, r2, minRatio) {
+  minRatio = minRatio || 0.5;
+
   var overlapW, overlapH;
   if (r1.x > r2.x) {
     overlapW = Math.min((r2.x + r2.width) - r1.x, r1.width);
