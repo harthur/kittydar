@@ -23,13 +23,13 @@ var opts = nomnom.options({
 var truePos = 0;
 var falsePos = 0;
 var misses = [];
-var finds = [];
 var newpasses = [];
 var newfails = [];
-var results = [];
-var total;
 
-var totalTime;
+var results = [];
+var count;
+
+var time = 0;
 
 runTest();
 
@@ -41,9 +41,9 @@ function runTest() {
       return path.extname(file) == ".jpg";
     });
 
-    total = images.length;
+    count = images.length;
 
-    console.log("running kittydar on " + total + " images");
+    console.log("running kittydar on " + count + " images");
     printDots();
 
     async.forEach(images, testImage, printResults);
@@ -53,9 +53,9 @@ function runTest() {
 function printResults() {
   charm.cursor(true);
 
-  console.log("\n\ntrue positives:  ", truePos);
-  console.log("false negatives: ", misses.length);
-  console.log("false positives: ", falsePos);
+  console.log("\n\ntrue positives:  ", truePos.toString().green);
+  console.log("false negatives: ", misses.length.toString().red);
+  console.log("false positives: ", falsePos.toString().red);
 
   if (newpasses.length) {
     console.log("\nnew passes!".green);
@@ -72,6 +72,9 @@ function printResults() {
     }
     console.log("\n");
   }
+
+  var avg = (time / count / 1000).toFixed(2);
+  console.log("\naverage time per image: " + avg + "s\n");
 }
 
 function testImage(image, callback) {
@@ -93,7 +96,11 @@ function testImage(image, callback) {
 
     utils.drawImgToCanvas(file, function(err, canvas) {
       // todo: detect time
+      var t1 = Date.now();
+
       var cats = kittydar.detectCats(canvas);
+
+      time += Date.now() - t1;
 
       var found = false;
       cats.forEach(function(cat) {
@@ -108,7 +115,6 @@ function testImage(image, callback) {
       });
 
       if (found) {
-        finds.push(file);
         results.push("pass");
 
         if (todos.indexOf(image) >= 0) {
@@ -132,7 +138,7 @@ function testImage(image, callback) {
 
 function printDots() {
   charm.erase("start");
-  charm.move(-total, 0);
+  charm.move(-count, 0);
 
   var str = "";
   for (var i = 0; i < results.length; i++) {
@@ -143,7 +149,7 @@ function printDots() {
       str += "•".red.bold;
     }
   }
-  var rest = total - results.length;
+  var rest = count - results.length;
 
   for (var i = 0; i < rest; i++) {
     str += "·".grey;
