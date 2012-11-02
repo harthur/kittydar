@@ -8,7 +8,8 @@ var fs = require("fs"),
     charm = require("charm")(),
     utils = require("../utils"),
     nms = require("../nms"),
-    kittydar = require("../kittydar");
+    kittydar = require("../kittydar"),
+    todos = require("./todos");
 
 charm.pipe(process.stdout);
 
@@ -23,6 +24,8 @@ var truePos = 0;
 var falsePos = 0;
 var misses = [];
 var finds = [];
+var newpasses = [];
+var newfails = [];
 var results = [];
 var total;
 
@@ -36,28 +39,43 @@ function runTest() {
 
     var images = files.filter(function(file) {
       return path.extname(file) == ".jpg";
-    })
-
-    images = images.slice(0, 4);
+    });
 
     total = images.length;
 
+    console.log("running kittydar on " + total + " images");
     printDots();
+
     async.forEach(images, testImage, printResults);
   });
 }
 
 function printResults() {
+  charm.cursor(true);
+
   console.log("\n\ntrue positives:  ", truePos);
   console.log("false negatives: ", misses.length);
   console.log("false positives: ", falsePos);
 
-  console.log("\nfound:\n", finds);
-  console.log("\nmisses:\n", misses);
+  if (newpasses.length) {
+    console.log("\nnew passes!".green);
+    for (var i = 0; i < newpasses.length; i++) {
+      console.log(newpasses[i]);
+    }
+    console.log("\n");
+  }
+
+  if (newfails.length) {
+    console.log("\nnew failures )=".red);
+    for (var i = 0; i < newfails.length; i++) {
+      console.log(newfails[i]);
+    }
+    console.log("\n");
+  }
 }
 
-function testImage(file, callback) {
-  file = opts.dir + file;
+function testImage(image, callback) {
+  var file = opts.dir + image;
 
   fs.readFile(file + ".cat", "utf-8", function(err, text) {
     if (err) throw err;
@@ -91,11 +109,19 @@ function testImage(file, callback) {
 
       if (found) {
         finds.push(file);
-        results.push("pass")
+        results.push("pass");
+
+        if (todos.indexOf(image) >= 0) {
+          newpasses.push(file);
+        }
       }
       else {
         misses.push(file);
         results.push("fail");
+
+        if (todos.indexOf(image) == -1) {
+          newfails.push(file);
+        }
       }
       printDots();
 
@@ -123,23 +149,9 @@ function printDots() {
     str += "·".grey;
   }
   charm.write(str);
-  charm.down(1);
-}
 
-function saveCrop(canvas, cat, isTrue) {
-  var cropCanvas = new Canvas(cat.width, cat.height);
-  var ctx = cropCanvas.getContext('2d');
-  ctx.patternQuality = "best";
-
-  ctx.drawImage(canvas, cat.x, cat.y, cat.width, cat.height,
-                0, 0, cat.width, cat.height);
-
-  var dir = __dirname + "/CROPS/" + (isTrue ? "/TRUE/" : "/FALSE/");
-  var file = dir + cat.x + "_" + cat.y + "_" + cat.width
-             + "_" + cat.prob.toFixed(2) + ".jpg"
-  utils.writeCanvasToFile(cropCanvas, file, function(err) {
-    if (err) console.log(err);
-  });
+  // hide the cursor when printing the dots
+  charm.cursor(false);
 }
 
 function doesOverlap(cat, rect) {
