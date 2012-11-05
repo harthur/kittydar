@@ -1,7 +1,13 @@
 # Testing
 
-To test kittydar, run `test.js`. This will run `kittydar.detectCats()` on several images. The number of cats missed is reported, as well as the number of false positives.
+To test kittydar, run:
 
-# Test Images
+```
+node test.js
+```
 
-The test images are located in the `TEST` directory. They are from @maxogden's [maxogden/cats](http://github.com/maxogden/cats) under BSD license.
+This will run `kittydar.detectCats()` on several images. The number of cats missed is reported, as well as the number of false positives.
+
+## Test Images
+
+The test images are located in the `TEST` directory. Many of them are from @maxogden's [maxogden/cats](http://github.com/maxogden/cats) under BSD license.
