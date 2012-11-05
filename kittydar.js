@@ -13,7 +13,7 @@ var params = {
   patchSize: 48,       // size of training images in px
   minSize: 48,         // starting window size
   resize: 360,         // initial image resize size in px
-  threshold: 0.995,    // probablity threshold for classifying
+  threshold: 0.999,    // probablity threshold for classifying
   scaleStep: 6,        // scaling step size in px
   shiftBy: 6,          // px to slide window by
   overlapThresh: 0.5,  // min overlap ratio to classify as an overlap

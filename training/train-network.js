@@ -44,7 +44,7 @@ var params = {
     learningRate: 0.2
   },
   train: {
-    errorThresh: 0.05,
+    errorThresh: 0.008,
     log: true,
     logPeriod: 1
   }
