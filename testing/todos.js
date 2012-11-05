@@ -25,5 +25,7 @@ module.exports =  [
   'b3f6a1ae359711e19e4a12313813ffc0_7.jpg',   // too small, facing away
   'c47c1ca0ff4c11e1a76e22000a1e8903_7.jpg',   // ears cut off
   'c9eead403a8c11e19e4a12313813ffc0_7.jpg',   // ---- should work
-  'e8f4da56d3c611e18ca012313806b840_7.jpg'    // not facing forward
+  'e8f4da56d3c611e18ca012313806b840_7.jpg',   // not facing forward
+  'be87b8a0721f11e1b9f1123138140926_7.jpg',   // head tilted
+  '812794549d2511e1a9f71231382044a1_7.jpg'    // not facing forward
   ];
