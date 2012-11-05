@@ -85,14 +85,17 @@ function testImage(image, callback) {
 
     var vals = text.split(" ").map(function(val) {
       return parseInt(val)
-    })
+    });
 
-    var rect = {
-      x: vals[0],
-      y: vals[1],
-      width: vals[2],
-      height: vals[3]
-    };
+    var rect;
+    if (vals.length >= 4) {
+      rect = {
+        x: vals[0],
+        y: vals[1],
+        width: vals[2],
+        height: vals[3]
+      };
+    }
 
     utils.drawImgToCanvas(file, function(err, canvas) {
       // todo: detect time
@@ -104,7 +107,10 @@ function testImage(image, callback) {
 
       var found = false;
       cats.forEach(function(cat) {
-        var overlaps = nms.doesOverlap(cat, rect);
+        var overlaps = false;
+        if (rect) {
+          overlaps = nms.doesOverlap(cat, rect);
+        }
         if (overlaps) {
           found = true;
           truePos++;
@@ -121,7 +127,7 @@ function testImage(image, callback) {
           newpasses.push(file);
         }
       }
-      else {
+      else if (rect) {
         misses.push(file);
         results.push("fail");
 
