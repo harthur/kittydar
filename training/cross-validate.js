@@ -40,7 +40,22 @@ var combos = [{
     hiddenLayers: [10, 10]
   },
   train: {
-    errorThresh: 0.007
+    errorThresh: 0.008
+  }
+},
+{
+  HOG: {
+    cellSize: 6,
+    blockSize: 2,
+    blockStride: 1,
+    bins: 6,
+    norm: "L2"
+  },
+  nn: {
+    hiddenLayers: [30]
+  },
+  train: {
+    errorThresh: 0.008
   }
 }];
 
