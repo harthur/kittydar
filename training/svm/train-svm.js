@@ -83,8 +83,16 @@ function trainSVM(params) {
   console.log("stats:", stats);
   console.log("parameters:", params);
 
-  var json = SVM.toJSON();
-  console.log("LEN: ", json.data.length);
+  var obj = SVM.toJSON();
+
+  var json = JSON.stringify(SVM.toJSON(), 4);
+
+  console.log("LEN: ", obj.data.length);
+
+  fs.writeFile(opts.outfile, json, function (err) {
+    if (err) throw err;
+    console.log('saved svm JSON to', opts.outfile);
+  });
 
   testSVM(SVM);
 }
