@@ -13,7 +13,6 @@ var params = {
   patchSize: 48,       // size of training images in px
   minSize: 48,         // starting window size
   resize: 360,         // initial image resize size in px
-  threshold: 0.999,    // probablity threshold for classifying
   scaleStep: 6,        // scaling step size in px
   shiftBy: 6,          // px to slide window by
   overlapThresh: 0.5,  // min overlap ratio to classify as an overlap
@@ -24,6 +23,15 @@ var params = {
     blockStride: 1,
     bins: 6,
     norm: "L2"
+  },
+  test: function(vectors) {
+    // this should be overridden if another classifier or features are used
+    var features = hog.extractHOGFromVectors(vectors, params.HOGparams);
+    var output = net.runInput(features)[0];
+    return {
+      isCat: output > 0.999,
+      value: output
+    };
   }
 }
 
@@ -103,15 +111,14 @@ var kittydar = {
     for (var y = 0; y + size < height; y += params.shiftBy) {
       for (var x = 0; x + size < width; x += params.shiftBy) {
         var win = getRect(vectors, x, y, size, size);
-        var prob = this.isCat(win);
-
-        if (prob > params.threshold) {
+        var result = params.test(win);
+        if (result.isCat) {
           cats.push({
             x: Math.floor(x / scale),
             y: Math.floor(y / scale),
             width: Math.floor(size / scale),
             height: Math.floor(size / scale),
-            prob: prob
+            value: result.value
           });
         }
       }
