@@ -51,9 +51,7 @@ var params = {
   },
   svm: {
     numpasses: 3,
-    kernel: 'rbf',
-    rbfsigma: 2,
-    C: 5
+    kernel: 'linear'
   }
 };
 
@@ -86,8 +84,6 @@ function trainSVM(params) {
   var obj = SVM.toJSON();
 
   var json = JSON.stringify(SVM.toJSON(), 4);
-
-  console.log("LEN: ", obj.data.length);
 
   fs.writeFile(opts.outfile, json, function (err) {
     if (err) throw err;

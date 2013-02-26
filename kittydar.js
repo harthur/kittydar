@@ -1,5 +1,6 @@
 var brain = require("brain"),
     hog = require("hog-descriptor"),
+    svm = require("svm"),
     nms = require("./nms");
 
 if (process.arch) {   // in node
@@ -8,6 +9,28 @@ if (process.arch) {   // in node
 
 var network = require("./network.js");
 var net = new brain.NeuralNetwork().fromJSON(network);
+
+function testNN(vectors) {
+  var features = hog.extractHOGFromVectors(vectors, params.HOGparams);
+  var output = net.runInput(features)[0];
+  return {
+    isCat: output > 0.999,
+    value: output
+  };
+}
+
+var state = require("./svm.json");
+var SVM = new svm.SVM();
+SVM.fromJSON(state);
+
+function testSVM(vectors) {
+  var features = hog.extractHOGFromVectors(vectors, params.HOGparams);
+  var label = SVM.predict([features])[0];
+  return {
+    isCat: label == 1,
+    value: 1
+  };
+}
 
 var params = {
   patchSize: 48,       // size of training images in px
@@ -24,15 +47,8 @@ var params = {
     bins: 6,
     norm: "L2"
   },
-  test: function(vectors) {
-    // this should be overridden if another classifier or features are used
-    var features = hog.extractHOGFromVectors(vectors, params.HOGparams);
-    var output = net.runInput(features)[0];
-    return {
-      isCat: output > 0.999,
-      value: output
-    };
-  }
+  test: testNN,   // this should be overridden if another classifier or features are used
+  classifier: "neuralnet"
 }
 
 var kittydar = {
@@ -41,6 +57,13 @@ var kittydar = {
       for (var opt in options) {
         params[opt] = options[opt];
       }
+    }
+
+    if (!options || !options.test) {
+      params.test = {
+        "neuralnet": testNN,
+        "svm": testSVM
+      }[params.classifier];
     }
 
     // get canvases of the image at different scales
