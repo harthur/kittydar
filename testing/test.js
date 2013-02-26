@@ -101,7 +101,7 @@ function testImage(image, callback) {
       // todo: detect time
       var t1 = Date.now();
 
-      var cats = kittydar.detectCats(canvas, {classifier: 'svm'});
+      var cats = kittydar.detectCats(canvas);
 
       time += Date.now() - t1;
 
