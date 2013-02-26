@@ -1,6 +1,5 @@
 var brain = require("brain"),
     hog = require("hog-descriptor"),
-    svm = require("svm"),
     nms = require("./nms");
 
 if (process.arch) {   // in node
@@ -9,19 +8,6 @@ if (process.arch) {   // in node
 
 var network = require("./network.js");
 var net = new brain.NeuralNetwork().fromJSON(network);
-/*
-var state = require("./svm.json");
-var SVM = new svm.SVM();
-SVM.fromJSON(state);
-
-function testSVM(vectors) {
-  var features = hog.extractHOGFromVectors(vectors, params.HOGparams);
-  var label = SVM.predict([features])[0];
-  return {
-    isCat: label == 1,
-    value: 1
-  };
-} */
 
 var params = {
   patchSize: 48,       // size of training images in px
