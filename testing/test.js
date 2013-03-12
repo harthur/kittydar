@@ -73,7 +73,7 @@ function printResults() {
     console.log("\n");
   }
 
-  var avg = (time / count / 1000).toFixed(2);
+  var avg = (time / count / 1000).toFixed(2);  // baseline 5.08s
   console.log("\naverage time per image: " + avg + "s\n");
 }
 
@@ -161,7 +161,4 @@ function printDots() {
     str += "·".grey;
   }
   charm.write(str);
-
-  // hide the cursor when printing the dots
-  charm.cursor(false);
 }

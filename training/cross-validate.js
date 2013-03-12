@@ -28,16 +28,18 @@ var opts = nomnom.options({
 }).colors().parse();
 
 
-var combos = [{
+var combos = [
+{
   HOG: {
-    cellSize: 6,
-    blockSize: 2,
-    blockStride: 1,
+    cellSize: 4,
+    blockSize: 3,
+    blockStride: 3,
     bins: 6,
     norm: "L2"
   },
   nn: {
-    hiddenLayers: [10, 10]
+    hiddenLayers: [10, 10],
+    binaryThresh: 0.99
   },
   train: {
     errorThresh: 0.008
@@ -45,19 +47,21 @@ var combos = [{
 },
 {
   HOG: {
-    cellSize: 6,
-    blockSize: 2,
-    blockStride: 1,
+    cellSize: 3,
+    blockSize: 4,
+    blockStride: 4,
     bins: 6,
     norm: "L2"
   },
   nn: {
-    hiddenLayers: [30]
+    hiddenLayers: [10, 10],
+    binaryThresh: 0.99
   },
   train: {
     errorThresh: 0.008
   }
-}];
+}
+];
 
 console.log("testing", combos.length, "combinations");
 
@@ -72,7 +76,7 @@ function testAll(combos) {
     var data = collect.collectData(opts.posDir, opts.negDir, samples,
                                    opts.limit, params);
 
-    console.log("testing", i + 1 + ": " + params, "on " + data.length)
+    console.log("testing", i + 1 + ": " + JSON.stringify(params), "on " + data.length)
 
     var stats = testParams(data, params);
     var test = {

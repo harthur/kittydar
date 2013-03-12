@@ -29,32 +29,32 @@ var opts = nomnom.options({
 }).colors().parse();
 
 
-var combos = [{
+var combos = [
+{
   HOG: {
-    cellSize: 6,
+    cellSize: 4,
     blockSize: 2,
     blockStride: 1,
     bins: 6,
     norm: "L2"
   },
   svm: {
-    maxiter: 1000,
     numpasses: 5,
-    C: 5
+    kernel: 'rbf',
+    memoize: true
   }
 },
 {
   HOG: {
-    cellSize: 6,
+    cellSize: 4,
     blockSize: 2,
     blockStride: 1,
     bins: 6,
     norm: "L2"
   },
   svm: {
-    maxiter: 1000,
     numpasses: 5,
-    C: 7
+    kernel: 'rbf'
   }
 }
 ];

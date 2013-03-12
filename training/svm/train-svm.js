@@ -43,7 +43,7 @@ var opts = nomnom.options({
 
 var params = {
   HOG: {
-    cellSize: 6,
+    cellSize: 4,
     blockSize: 2,
     blockStride: 1,
     bins: 6,
@@ -51,6 +51,7 @@ var params = {
   },
   svm: {
     numpasses: 3,
+    C: 0.1,
     kernel: 'linear'
   }
 };
@@ -82,8 +83,7 @@ function trainSVM(params) {
   console.log("parameters:", params);
 
   var obj = SVM.toJSON();
-
-  var json = JSON.stringify(SVM.toJSON(), 4);
+  var json = JSON.stringify(obj, 4);
 
   fs.writeFile(opts.outfile, json, function (err) {
     if (err) throw err;
