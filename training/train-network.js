@@ -33,7 +33,7 @@ var opts = nomnom.options({
 
 var params = {
   HOG: {
-    cellSize: 6,
+    cellSize: 4,
     blockSize: 2,
     blockStride: 1,
     bins: 6,

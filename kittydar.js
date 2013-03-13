@@ -6,7 +6,7 @@ if (process.arch) {   // in node
   var Canvas = (require)('canvas');
 }
 
-var network = require("./network.js");
+var network = require("./network-4-2-1.json");
 var net = new brain.NeuralNetwork().fromJSON(network);
 
 var params = {
@@ -14,25 +14,26 @@ var params = {
   minSize: 48,         // starting window size
   resize: 360,         // initial image resize size in px
   scaleStep: 6,        // scaling step size in px
-  shiftBy: 6,          // px to slide window by
+  shiftBy: 4,          // px to slide window by
   overlapThresh: 0.5,  // min overlap ratio to classify as an overlap
   minOverlaps: 2,      // minumum overlapping rects to classify as a head
   HOGparams: {         // parameters for HOG descriptor
-    cellSize: 6,
+    cellSize: 4, // must divide evenly into shiftBy
     blockSize: 2,
     blockStride: 1,
     bins: 6,
     norm: "L2"
   },
-  extractFeatures: function(vectors) {
+  extractFeatures: function(imagedata, histograms) {
     // override if using another set of features
-    return hog.extractHOGFromVectors(vectors, params.HOGparams);
+    var descriptor = hog.extractHOGFromHistograms(histograms, params.HOGparams);
+    return descriptor;
   },
   classify: function(features) {
     // override if using another classifier
     var output = net.runInput(features)[0];
     return {
-      isCat: output > 0.999,
+      isCat: output > 0.995,
       value: output
     };
   }
@@ -94,27 +95,21 @@ var kittydar = {
     return imagedata;
   },
 
-  isCat: function(vectors) {
-    var features = hog.extractHOGFromVectors(vectors, params.HOGparams);
-
-    var prob = net.runInput(features)[0];
-    return prob;
-  },
-
   detectAtScale: function(imagedata, scale) {
     // Detect using a sliding window of a fixed size.
-    var vectors = hog.gradientVectors(imagedata);
+    var histograms = hog.extractHistograms(imagedata, params.HOGparams);
     var cats = [];
 
     var width = imagedata.width,
         height = imagedata.height;
 
     var size = params.patchSize;
+    var shift = params.shiftBy;
 
-    for (var y = 0; y + size < height; y += params.shiftBy) {
-      for (var x = 0; x + size < width; x += params.shiftBy) {
-        var win = getRect(vectors, x, y, size, size);
-        var features = params.extractFeatures(win);
+    for (var y = 0; y + size < height; y += shift) {
+      for (var x = 0; x + size < width; x += shift) {
+        var histRect = getRect(histograms, x / shift, y / shift, size / shift, size / shift);
+        var features = params.extractFeatures(imagedata, histRect);
         var result = params.classify(features);
 
         if (result.isCat) {
