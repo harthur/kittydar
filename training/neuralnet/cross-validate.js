@@ -2,9 +2,8 @@ var fs = require("fs"),
     path = require("path"),
     nomnom = require("nomnom"),
     brain = require("brain"),
-    features = require("../features"),
-    utils = require("../utils"),
-    collect = require("./collect");
+    utils = require("../../utils"),
+    collect = require("../collect");
 
 var opts = nomnom.options({
   posDir: {

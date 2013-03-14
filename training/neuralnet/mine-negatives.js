@@ -2,9 +2,9 @@ var fs = require("fs"),
     path = require("path"),
     brain = require("brain"),
     nomnom = require("nomnom"),
-    features = require("../features"),
-    utils = require("../utils")
-    collect = require("./collect");
+    features = require("../../features"),
+    utils = require("../../utils")
+    collect = require("../collect");
 
 var opts = nomnom.options({
   negDir: {
