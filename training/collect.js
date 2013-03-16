@@ -67,7 +67,7 @@ function getDir(dir, isCat, samples, limit, params) {
         continue;
       }
       data.push({
-        input: fts,
+        input: new Float64Array(fts),
         output: [isCat ? 1 : 0],
         file: file,
       });

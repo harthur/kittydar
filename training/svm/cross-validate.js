@@ -4,7 +4,7 @@ var fs = require("fs"),
     svm = require("svm"),
     features = require("../../features"),
     utils = require("../../utils"),
-    _ = require("underscore")
+    _ = require("underscore"),
     collect = require("../collect");
 
 var opts = nomnom.options({
@@ -41,7 +41,8 @@ var combos = [
   svm: {
     numpasses: 5,
     kernel: 'rbf',
-    memoize: true
+    rbfsigma: 0.5,
+    C: 5
   }
 },
 {
@@ -54,7 +55,9 @@ var combos = [
   },
   svm: {
     numpasses: 5,
-    kernel: 'rbf'
+    kernel: 'rbf',
+    rbfsigma: 2,
+    C: 5
   }
 }
 ];
