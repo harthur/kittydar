@@ -6,14 +6,16 @@ var fs = require("fs"),
     collect = require("../collect");
 
 var opts = nomnom.options({
-  posDir: {
-    position: 0,
-    default: __dirname + "/collection/POSITIVES/",
+  pos: {
+    abbr: 'p',
+    list: true,
+    required: true,
     help: "Directory of cat head images"
   },
-  negDir: {
-    position: 1,
-    default: __dirname + "/collection/NEGATIVES/",
+  neg: {
+    abbr: 'n',
+    list: true,
+    required: true,
     help: "Directory of negative images"
   },
   sample: {
@@ -72,7 +74,7 @@ function testAll(combos) {
   for (var i = 0; i < combos.length; i++) {
     var params = combos[i];
     var samples = opts.sample ? 1 : 0;
-    var data = collect.collectData(opts.posDir, opts.negDir, samples,
+    var data = collect.collectData(opts.pos, opts.neg, samples,
                                    opts.limit, params);
 
     console.log("testing", i + 1 + ": " + JSON.stringify(params), "on " + data.length)

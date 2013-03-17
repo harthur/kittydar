@@ -7,33 +7,34 @@ var fs = require("fs"),
     collect = require("../collect");
 
 var opts = nomnom.options({
-  posDir: {
-    position: 0,
-    default: __dirname + "/collection/POSITIVES/",
-    help: "Directory of cat head images"
+  pos: {
+    abbr: 'p',
+    list: true,
+    required: true,
+    help: "Directory of positive training images"
   },
-  negDir: {
-    position: 1,
-    default: __dirname + "/collection/NEGATIVES/",
-    help: "Directory of negative images"
+  neg: {
+    abbr: 'n',
+    list: true,
+    required: true,
+    help: "Directory of negative training images"
   },
   testPos: {
-    position: 2,
-    default: __dirname + "/collection/POSITIVES_TEST",
-    help: "Directory of test positive images"
+    list: true,
+    help: "Directory of positive test images"
   },
   testNeg: {
-    position: 3,
-    default: __dirname + "/collection/NEGATIVES_TEST",
-    help: "Directory of test negative images"
+    list: true,
+    help: "Directory of negative test images"
   },
   outfile: {
-    default: __dirname + "/network.json",
-    help: "file to save network JSON to"
+    default: __dirname + "/svm.json",
+    help: "file to save SVM JSON to"
   },
   sample: {
     flag: true,
-    help: "whether to sub-sample the negative images"
+    help: "whether to sub-sample the negative images",
+    hidden: true
   },
   limit: {
     default: 10000,
@@ -60,7 +61,7 @@ trainSVM(params)
 
 function trainSVM(params) {
   var samples = opts.sample ? 1 : 0;
-  var data = collect.collectData(opts.posDir, opts.negDir, samples,
+  var data = collect.collectData(opts.pos, opts.neg, samples,
                                  opts.limit, params);
 
   var inputs = [];

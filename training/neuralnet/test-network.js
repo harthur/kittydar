@@ -6,17 +6,19 @@ var fs = require("fs"),
     collect = require("../collect");
 
 var opts = nomnom.options({
-  posDir: {
-    position: 0,
-    default: __dirname + "/collection/POSITIVES_TEST/",
-    help: "Directory of test positives"
+  pos: {
+    abbr: 'p',
+    list: true,
+    required: true,
+    help: "Directory of test positive images"
   },
-  negDir: {
-    position: 1,
-    default: __dirname + "/collection/NEGATIVES_TEST/",
-    help: "Directory of test negatives"
+  neg: {
+    abbr: 'n',
+    list: true,
+    required: true,
+    help: "Directory of test negative images"
   },
-  network: {
+  json: {
     default: __dirname + "/network.json",
     help: "Neural network JSON file"
   },
@@ -29,7 +31,7 @@ var opts = nomnom.options({
 testNetwork();
 
 function testNetwork() {
-  var data = collect.collectData(opts.posDir, opts.negDir, opts.sample ? 1 : 0);
+  var data = collect.collectData(opts.pos, opts.neg, opts.sample ? 1 : 0);
   console.log("testing on", data.length);
 
   console.log("feature size", data[0].input.length);

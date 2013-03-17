@@ -6,14 +6,16 @@ var fs = require("fs"),
     collect = require("../collect");
 
 var opts = nomnom.options({
-  posDir: {
-    position: 0,
-    default: __dirname + "/collection/POSITIVES/",
+  pos: {
+    abbr: 'p',
+    list: true,
+    required: true,
     help: "Directory of cat head images"
   },
-  negDir: {
-    position: 1,
-    default: __dirname + "/collection/NEGATIVES/",
+  neg: {
+    abbr: 'n',
+    list: true,
+    required: true,
     help: "Directory of negative images"
   },
   outfile: {
@@ -22,7 +24,8 @@ var opts = nomnom.options({
   },
   sample: {
     flag: true,
-    help: "whether to sub-sample the negative images"
+    help: "whether to sub-sample the negative images",
+    hidden: true
   },
   limit: {
     default: 10000,
@@ -53,7 +56,7 @@ trainNetwork(params)
 
 function trainNetwork(params) {
   var samples = opts.sample ? 1 : 0;
-  var data = collect.collectData(opts.posDir, opts.negDir, samples,
+  var data = collect.collectData(opts.pos, opts.neg, samples,
                                  opts.limit, params);
 
   console.log("training on", data.length);
