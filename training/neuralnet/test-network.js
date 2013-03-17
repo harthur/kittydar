@@ -36,7 +36,7 @@ function testNetwork() {
 
   console.log("feature size", data[0].input.length);
 
-  var json = require(opts.network)
+  var json = require(opts.json);
   var network = new brain.NeuralNetwork({binaryThresh: 0.99}).fromJSON(json);
   var stats = network.test(data);
 

@@ -38,7 +38,7 @@ function testSVM() {
   var SVM = new svm.SVM();
   SVM.fromJSON(json);
 
-  var data = collect.collectData(opts.posDir, opts.negDir, opts.sample ? 1 : 0);
+  var data = collect.collectData(opts.pos, opts.neg, opts.sample ? 1 : 0);
 
   console.time("TEST")
   var truePos = 0, trueNeg = 0, falsePos = 0, falseNeg = 0;
