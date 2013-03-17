@@ -31,7 +31,10 @@ exports.drawImgToCanvas = function(file, callback) {
 }
 
 exports.drawImgToCanvasSync = function(file) {
-  var data = fs.readFileSync(file)
+  var data = fs.readFileSync(file);
+  if (!data.length) {
+    throw "empty file";
+  }
   var canvas = exports.dataToCanvas(data);
   return canvas;
 }

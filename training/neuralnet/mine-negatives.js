@@ -64,6 +64,8 @@ function mineNegatives() {
     }
     catch (e) {
       console.log(e, file);
+      fs.unlinkSync(file);
+      console.log("deleted", file);
     }
     var samples = collect.extractSamples(canvas, opts.samples);
 
@@ -81,6 +83,7 @@ function testSample(file, canvas) {
   var result = network.run(fts);
 
   if (result >= opts.threshold) {
+    console.log("false positive", file);
     var rand = Math.floor(Math.random() * 1000);
     var file = opts.minedDir + "/" + rand + "_" + path.basename(file);
     utils.writeCanvasToFileSync(canvas, file);
