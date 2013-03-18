@@ -18,6 +18,14 @@ var opts = nomnom.options({
     required: true,
     help: "Directory of negative images"
   },
+  testPos: {
+    list: true,
+    help: "Directory of positive test images"
+  },
+  testNeg: {
+    list: true,
+    help: "Directory of negative test images"
+  },
   outfile: {
     default: __dirname + "/network.json",
     help: "file to save network JSON to"
@@ -75,4 +83,32 @@ function trainNetwork(params) {
     if (err) throw err;
     console.log('saved network to', opts.outfile);
   });
+
+  if (opts.testPos && opts.testNeg) {
+    testNetwork(network);
+  }
+}
+
+function testNetwork(network) {
+  var data = collect.collectData(opts.testPos, opts.testNeg, opts.sample ? 1 : 0,
+                                 opts.limit, params);
+  console.log("testing on", data.length);
+  console.log("feature size", data[0].input.length);
+
+  console.time("TEST");
+
+  var stats = network.test(data);
+
+  console.timeEnd("TEST");
+
+  console.log("error:     " + stats.error);
+  console.log("precision: " + stats.precision)
+  console.log("recall:    " + stats.recall)
+  console.log("accuracy:  " + stats.accuracy)
+
+  console.log(stats.truePos + " true positives");
+  console.log(stats.trueNeg + " true negatives");
+  console.log(stats.falsePos + " false positives");
+  console.log(stats.falseNeg + " false negatives");
+  console.log(stats.total + " total");
 }
