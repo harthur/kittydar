@@ -6,7 +6,7 @@ if (process.arch) {   // in node
   var Canvas = (require)('canvas');
 }
 
-var network = require("./network-4-2-1.json");
+var network = require("./network.json");
 var net = new brain.NeuralNetwork().fromJSON(network);
 
 var params = {
@@ -16,7 +16,7 @@ var params = {
   scaleStep: 6,        // scaling step size in px
   shiftBy: 4,          // px to slide window by
   overlapThresh: 0.5,  // min overlap ratio to classify as an overlap
-  minOverlaps: 2,      // minumum overlapping rects to classify as a head
+  minOverlaps: 8,      // minumum overlapping rects to classify as a head
   HOGparams: {         // parameters for HOG descriptor
     cellSize: 4, // must divide evenly into shiftBy
     blockSize: 2,
