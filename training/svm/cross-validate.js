@@ -37,14 +37,12 @@ var combos = [
     cellSize: 4,
     blockSize: 2,
     blockStride: 1,
-    bins: 6,
+    bins: 7,
     norm: "L2"
   },
   svm: {
     numpasses: 5,
-    kernel: 'rbf',
-    rbfsigma: 0.5,
-    C: 5
+    C: 0.001,
   }
 },
 {
@@ -52,14 +50,25 @@ var combos = [
     cellSize: 4,
     blockSize: 2,
     blockStride: 1,
-    bins: 6,
+    bins: 9,
     norm: "L2"
   },
   svm: {
     numpasses: 5,
-    kernel: 'rbf',
-    rbfsigma: 2,
-    C: 5
+    C: 0.001,
+  }
+},
+{
+  HOG: {
+    cellSize: 4,
+    blockSize: 2,
+    blockStride: 1,
+    bins: 4,
+    norm: "L2"
+  },
+  svm: {
+    numpasses: 5,
+    C: 0.001,
   }
 }
 ];
@@ -126,8 +135,8 @@ function getPrintout(tests) {
 
 function testPartition(trainSet, testSet, params) {
   var SVM = new svm.SVM();
-  var inputs = [];
-  var labels = [];
+  var inputs = new Array(trainSet.length);
+  var labels = new Int8Array(trainSet.length);
 
   for (var i = 0; i < trainSet.length; i++) {
     inputs[i] = trainSet[i].input;
@@ -165,6 +174,7 @@ function testPartition(trainSet, testSet, params) {
 
   var stats = {
     trainTime : beginTest - beginTrain,
+    trainTimePerIter: (beginTest - beginTrain) / trainingStats.iters,
     testTime : endTest - beginTest,
     iterations: trainingStats.iters,
     falsePos: falsePos,
@@ -184,7 +194,8 @@ function crossValidate(data, params) {
   var avgs = {
     trainTime : 0,
     testTime : 0,
-    iterations: 0
+    iterations: 0,
+    trainTimePerIter: 0
   };
 
   var stats = {

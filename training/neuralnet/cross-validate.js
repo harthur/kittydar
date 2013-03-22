@@ -32,15 +32,15 @@ var opts = nomnom.options({
 var combos = [
 {
   HOG: {
-    cellSize: 4,
-    blockSize: 3,
-    blockStride: 3,
+    cellSize: 3,
+    blockSize: 2,
+    blockStride: 2,
     bins: 6,
     norm: "L2"
   },
   nn: {
     hiddenLayers: [10, 10],
-    binaryThresh: 0.99
+    binaryThresh: 0.8
   },
   train: {
     errorThresh: 0.008
@@ -49,14 +49,46 @@ var combos = [
 {
   HOG: {
     cellSize: 3,
-    blockSize: 4,
-    blockStride: 4,
+    blockSize: 2,
+    blockStride: 1,
     bins: 6,
     norm: "L2"
   },
   nn: {
     hiddenLayers: [10, 10],
-    binaryThresh: 0.99
+    binaryThresh: 0.8
+  },
+  train: {
+    errorThresh: 0.008
+  }
+},
+{
+  HOG: {
+    cellSize: 2,
+    blockSize: 3,
+    blockStride: 3,
+    bins: 6,
+    norm: "L2"
+  },
+  nn: {
+    hiddenLayers: [10, 10],
+    binaryThresh: 0.8
+  },
+  train: {
+    errorThresh: 0.008
+  }
+},
+{
+  HOG: {
+    cellSize: 4,
+    blockSize: 2,
+    blockStride: 1,
+    bins: 6,
+    norm: "L2"
+  },
+  nn: {
+    hiddenLayers: [10, 10],
+    binaryThresh: 0.8
   },
   train: {
     errorThresh: 0.008

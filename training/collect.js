@@ -5,7 +5,6 @@ var fs = require("fs"),
     features = require("../features");
 
 exports.collectData = collectData;
-exports.getDir = getDir;
 exports.extractSamples = extractSamples;
 
 /*
@@ -18,7 +17,7 @@ exports.extractSamples = extractSamples;
  *  file: 'test.jpg'
  * }
  */
-function collectData(pos, neg, samples, limit, params) {
+function collectData(pos, neg, samples, limit, params, type) {
   // number of samples to extract from each negative, 0 for whole image
   samples = samples || 0;
   params = params || {};
@@ -35,7 +34,25 @@ function collectData(pos, neg, samples, limit, params) {
   data.sort(function() {
     return 1 - 2 * Math.round(Math.random());
   });
+
+  if (type == "svm") {
+    return SVMData(data);
+  }
   return data;
+}
+
+function SVMData(data) {
+  var inputs = new Array(data.length);
+  var labels = new Int8Array(data.length);
+
+  for (var i = 0; i < data.length; i++) {
+    inputs[i] = data[i].input;
+    labels[i] = data[i].output[0] || -1;
+  }
+  return {
+    inputs: inputs,
+    labels: labels
+  };
 }
 
 function getDir(dir, isCat, samples, limit, params) {

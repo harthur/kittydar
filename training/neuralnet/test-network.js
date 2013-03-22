@@ -25,6 +25,10 @@ var opts = nomnom.options({
   sample: {
     flag: true,
     help: "sub-sample the negative images"
+  },
+  threshold: {
+    default: 0.99,
+    help: "threshold for classifying as a positive"
   }
 }).colors().parse();
 
@@ -37,7 +41,10 @@ function testNetwork() {
   console.log("feature size", data[0].input.length);
 
   var json = require(opts.json);
-  var network = new brain.NeuralNetwork({binaryThresh: 0.99}).fromJSON(json);
+  var network = new brain.NeuralNetwork({
+    binaryThresh: opts.threshold
+  }).fromJSON(json);
+
   var stats = network.test(data);
 
   console.log("error:     " + stats.error);

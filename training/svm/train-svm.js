@@ -47,12 +47,12 @@ var params = {
     cellSize: 4,
     blockSize: 2,
     blockStride: 1,
-    bins: 6,
+    bins: 7,
     norm: "L2"
   },
   svm: {
     numpasses: 3,
-    C: 0.1,
+    C: 0.001,
     kernel: 'linear'
   }
 };
@@ -62,17 +62,12 @@ trainSVM(params)
 function trainSVM(params) {
   var samples = opts.sample ? 1 : 0;
   var data = collect.collectData(opts.pos, opts.neg, samples,
-                                 opts.limit, params);
+                                 opts.limit, params, "svm");
 
-  var inputs = [];
-  var labels = [];
+  var inputs = data.inputs;
+  var labels = data.labels;
 
-  for (var i = 0; i < data.length; i++) {
-    inputs[i] = data[i].input;
-    labels[i] = data[i].output[0] || -1;
-  }
-
-  console.log("training on", data.length);
+  console.log("training on", inputs.length);
 
   var SVM = new svm.SVM();
 
