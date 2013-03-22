@@ -5,7 +5,6 @@ var fs = require("fs"),
     features = require("../features");
 
 exports.collectData = collectData;
-exports.getDir = getDir;
 exports.extractSamples = extractSamples;
 
 /*
