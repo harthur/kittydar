@@ -9,7 +9,7 @@ exports.doesOverlap = doesOverlap;
  *    y: // lop left y coordinate,
  *    width: // width of rect,
  *    height: // height of rect,
- *    prob: // the higher, the more likely it will suppress other rects
+ *    value: // rect with a higher value will suppress a rect with a lower value
  *  }
  *
  * minRatio is the min ratio of intersection area to union area of two rects
@@ -30,7 +30,7 @@ function combineOverlaps(rects, minRatio, minOverlaps) {
       var r2 = rects[j];
 
       if (doesOverlap(r1, r2, minRatio)) {
-        if (r1.prob > r2.prob) {
+        if (r1.value > r2.value) {
           r2.suppressed = true;
           r1.tally += 1 + r2.tally;
         }

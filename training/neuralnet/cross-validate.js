@@ -2,19 +2,20 @@ var fs = require("fs"),
     path = require("path"),
     nomnom = require("nomnom"),
     brain = require("brain"),
-    features = require("../features"),
-    utils = require("../utils"),
-    collect = require("./collect");
+    utils = require("../../utils"),
+    collect = require("../collect");
 
 var opts = nomnom.options({
-  posDir: {
-    position: 0,
-    default: __dirname + "/collection/POSITIVES/",
+  pos: {
+    abbr: 'p',
+    list: true,
+    required: true,
     help: "Directory of cat head images"
   },
-  negDir: {
-    position: 1,
-    default: __dirname + "/collection/NEGATIVES/",
+  neg: {
+    abbr: 'n',
+    list: true,
+    required: true,
     help: "Directory of negative images"
   },
   sample: {
@@ -28,21 +29,40 @@ var opts = nomnom.options({
 }).colors().parse();
 
 
-var combos = [{
+var combos = [
+{
   HOG: {
-    cellSize: 6,
-    blockSize: 2,
-    blockStride: 1,
+    cellSize: 4,
+    blockSize: 3,
+    blockStride: 3,
     bins: 6,
     norm: "L2"
   },
   nn: {
-    hiddenLayers: [10, 10]
+    hiddenLayers: [10, 10],
+    binaryThresh: 0.99
   },
   train: {
-    errorThresh: 0.007
+    errorThresh: 0.008
   }
-}];
+},
+{
+  HOG: {
+    cellSize: 3,
+    blockSize: 4,
+    blockStride: 4,
+    bins: 6,
+    norm: "L2"
+  },
+  nn: {
+    hiddenLayers: [10, 10],
+    binaryThresh: 0.99
+  },
+  train: {
+    errorThresh: 0.008
+  }
+}
+];
 
 console.log("testing", combos.length, "combinations");
 
@@ -54,10 +74,10 @@ function testAll(combos) {
   for (var i = 0; i < combos.length; i++) {
     var params = combos[i];
     var samples = opts.sample ? 1 : 0;
-    var data = collect.collectData(opts.posDir, opts.negDir, samples,
+    var data = collect.collectData(opts.pos, opts.neg, samples,
                                    opts.limit, params);
 
-    console.log("testing", i + 1 + ": " + params, "on " + data.length)
+    console.log("testing", i + 1 + ": " + JSON.stringify(params), "on " + data.length)
 
     var stats = testParams(data, params);
     var test = {

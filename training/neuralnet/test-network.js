@@ -2,41 +2,51 @@ var fs = require("fs"),
     path = require("path"),
     brain = require("brain"),
     nomnom = require("nomnom"),
-    features = require("../features"),
-    utils = require("../utils"),
-    collect = require("./collect");
+    params = require("./params"),
+    utils = require("../../utils"),
+    collect = require("../collect");
 
 var opts = nomnom.options({
-  posDir: {
-    position: 0,
-    default: __dirname + "/collection/POSITIVES_TEST/",
-    help: "Directory of test positives"
+  pos: {
+    abbr: 'p',
+    list: true,
+    required: true,
+    help: "Directory of test positive images"
   },
-  negDir: {
-    position: 1,
-    default: __dirname + "/collection/NEGATIVES_TEST/",
-    help: "Directory of test negatives"
+  neg: {
+    abbr: 'n',
+    list: true,
+    required: true,
+    help: "Directory of test negative images"
   },
-  network: {
+  json: {
     default: __dirname + "/network.json",
     help: "Neural network JSON file"
   },
   sample: {
     flag: true,
     help: "sub-sample the negative images"
+  },
+  threshold: {
+    default: 0.99,
+    help: "threshold for classifying as a positive"
   }
 }).colors().parse();
 
 testNetwork();
 
 function testNetwork() {
-  var data = collect.collectData(opts.posDir, opts.negDir, opts.sample ? 1 : 0);
+  var data = collect.collectData(opts.pos, opts.neg, opts.sample ? 1 : 0, undefined,
+                                 params);
   console.log("testing on", data.length);
 
   console.log("feature size", data[0].input.length);
 
-  var json = require(opts.network)
-  var network = new brain.NeuralNetwork().fromJSON(json);
+  var json = require(opts.json);
+  var network = new brain.NeuralNetwork({
+    binaryThresh: opts.threshold
+  }).fromJSON(json);
+
   var stats = network.test(data);
 
   console.log("error:     " + stats.error);

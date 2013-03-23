@@ -1,10 +1,11 @@
 var fs = require("fs"),
     path = require("path"),
-    brain = require("brain"),
+    svm = require("svm"),
     nomnom = require("nomnom"),
+    params = require("./params"),
     features = require("../features"),
-    utils = require("../utils")
-    collect = require("./collect");
+    utils = require("../../utils"),
+    collect = require("../collect");
 
 var opts = nomnom.options({
   negDir: {
@@ -19,8 +20,8 @@ var opts = nomnom.options({
     required: true,
     help: "Directory to put mined hard negatives in"
   },
-  network: {
-    default: __dirname + "/network.json",
+  jsonFile: {
+    default: __dirname + "/svm.json",
     help: "Neural network JSON file"
   },
   samples: {
@@ -30,15 +31,13 @@ var opts = nomnom.options({
   limit: {
     default: undefined,
     help: "Max number of negative images to process from directory"
-  },
-  threshold: {
-    default: 0.9,
-    help: "How wrong the classification is, from 0.5+ to 1.0"
   }
 }).colors().parse();
 
-var trained = require(opts.network);
-var network = new brain.NeuralNetwork().fromJSON(trained);
+var obj = require(opts.jsonFile);
+
+var SVM = new svm.SVM();
+SVM.fromJSON(obj);
 
 mineNegatives();
 
@@ -64,6 +63,8 @@ function mineNegatives() {
     }
     catch (e) {
       console.log(e, file);
+      fs.unlinkSync(file);
+      console.log("deleted", file);
     }
     var samples = collect.extractSamples(canvas, opts.samples);
 
@@ -77,10 +78,13 @@ function mineNegatives() {
 }
 
 function testSample(file, canvas) {
-  var fts = features.extractFeatures(canvas);
-  var result = network.run(fts);
+  var fts = features.extractFeatures(canvas, params.HOG);
 
-  if (result >= opts.threshold) {
+  var result = SVM.predict([fts])[0];
+
+  if (result == 1) {
+    console.log("false positive", file);
+    // write this image to the directory of mined negative images
     var rand = Math.floor(Math.random() * 1000);
     var file = opts.minedDir + "/" + rand + "_" + path.basename(file);
     utils.writeCanvasToFileSync(canvas, file);

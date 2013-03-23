@@ -1,38 +1,47 @@
-var brain = require("brain"),
-    hog = require("hog-descriptor"),
-    nms = require("./nms");
+var hog = require("hog-descriptor"),
+    nms = require("./nms"),
+    nnOptions = require("./classifiers/nn-options");
 
 if (process.arch) {   // in node
   var Canvas = (require)('canvas');
 }
 
-var network = require("./network.js");
-var net = new brain.NeuralNetwork().fromJSON(network);
-
 var params = {
   patchSize: 48,       // size of training images in px
   minSize: 48,         // starting window size
   resize: 360,         // initial image resize size in px
-  threshold: 0.999,    // probablity threshold for classifying
   scaleStep: 6,        // scaling step size in px
   shiftBy: 6,          // px to slide window by
   overlapThresh: 0.5,  // min overlap ratio to classify as an overlap
   minOverlaps: 2,      // minumum overlapping rects to classify as a head
   HOGparams: {         // parameters for HOG descriptor
-    cellSize: 6,
+    cellSize: 6, // must divide evenly into shiftBy
     blockSize: 2,
     blockStride: 1,
     bins: 6,
     norm: "L2"
+  },
+  extractFeatures: function(imagedata, histograms) {
+    // override if using another set of features
+    var descriptor = hog.extractHOGFromHistograms(histograms, params.HOGparams);
+    return descriptor;
+  },
+  classify: function(features) {
+    // override if using another classifier
+    var output = net.runInput(features)[0];
+    return {
+      isCat: output > 0.999,
+      value: output
+    };
   }
 }
+// use the neural network backend
+extend(params, nnOptions);
 
 var kittydar = {
   detectCats: function(canvas, options) {
     if (options) {
-      for (var opt in options) {
-        params[opt] = options[opt];
-      }
+      extend(params, options);
     }
 
     // get canvases of the image at different scales
@@ -83,35 +92,30 @@ var kittydar = {
     return imagedata;
   },
 
-  isCat: function(vectors) {
-    var features = hog.extractHOGFromVectors(vectors, params.HOGparams);
-
-    var prob = net.runInput(features)[0];
-    return prob;
-  },
-
   detectAtScale: function(imagedata, scale) {
     // Detect using a sliding window of a fixed size.
-    var vectors = hog.gradientVectors(imagedata);
+    var histograms = hog.extractHistograms(imagedata, params.HOGparams);
     var cats = [];
 
     var width = imagedata.width,
         height = imagedata.height;
 
     var size = params.patchSize;
+    var shift = params.shiftBy;
 
-    for (var y = 0; y + size < height; y += params.shiftBy) {
-      for (var x = 0; x + size < width; x += params.shiftBy) {
-        var win = getRect(vectors, x, y, size, size);
-        var prob = this.isCat(win);
+    for (var y = 0; y + size < height; y += shift) {
+      for (var x = 0; x + size < width; x += shift) {
+        var histRect = getRect(histograms, x / shift, y / shift, size / shift, size / shift);
+        var features = params.extractFeatures(imagedata, histRect);
+        var result = params.classify(features);
 
-        if (prob > params.threshold) {
+        if (result.isCat) {
           cats.push({
             x: Math.floor(x / scale),
             y: Math.floor(y / scale),
             width: Math.floor(size / scale),
             height: Math.floor(size / scale),
-            prob: prob
+            value: result.value
           });
         }
       }
@@ -141,7 +145,7 @@ function resizeCanvas(canvas, width, height) {
   return resizeCanvas;
 }
 
-function createCanvas (width, height) {
+function createCanvas(width, height) {
   if (typeof Canvas !== 'undefined') {
     // have node-canvas
     return new Canvas(width, height);
@@ -155,5 +159,10 @@ function createCanvas (width, height) {
   }
 }
 
+function extend(object, extensions) {
+  for (ext in extensions) {
+    object[ext] = extensions[ext];
+  }
+}
 
 module.exports = kittydar;

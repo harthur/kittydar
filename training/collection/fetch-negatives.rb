@@ -18,7 +18,7 @@ def getPage(page)
     if $fetched[url] != 1
       $fetched[url] = 1
 
-      name = rand(100000000000)
+      name = rand(1000000000000000)
 
       file = "#{$dir}/#{name}.jpg"
 
