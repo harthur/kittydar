@@ -1,9 +1,9 @@
 var fs = require("fs"),
     path = require("path"),
     nomnom = require("nomnom"),
-    features = require("../../features"),
-    utils = require("../../utils"),
     svm = require("svm"),
+    params = require("./params"),
+    utils = require("../../utils"),
     collect = require("../collect");
 
 var opts = nomnom.options({
@@ -38,7 +38,8 @@ function testSVM() {
   var SVM = new svm.SVM();
   SVM.fromJSON(json);
 
-  var data = collect.collectData(opts.pos, opts.neg, opts.sample ? 1 : 0);
+  var data = collect.collectData(opts.pos, opts.neg, opts.sample ? 1 : 0,
+                                 undefined, params);
 
   console.time("TEST")
   var truePos = 0, trueNeg = 0, falsePos = 0, falseNeg = 0;

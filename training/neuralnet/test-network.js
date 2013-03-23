@@ -2,6 +2,7 @@ var fs = require("fs"),
     path = require("path"),
     brain = require("brain"),
     nomnom = require("nomnom"),
+    params = require("./params"),
     utils = require("../../utils"),
     collect = require("../collect");
 
@@ -35,7 +36,8 @@ var opts = nomnom.options({
 testNetwork();
 
 function testNetwork() {
-  var data = collect.collectData(opts.pos, opts.neg, opts.sample ? 1 : 0);
+  var data = collect.collectData(opts.pos, opts.neg, opts.sample ? 1 : 0, undefined,
+                                 params);
   console.log("testing on", data.length);
 
   console.log("feature size", data[0].input.length);

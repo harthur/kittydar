@@ -91,7 +91,7 @@ function trainNetwork(params) {
 
 function testNetwork(network) {
   var data = collect.collectData(opts.testPos, opts.testNeg, opts.sample ? 1 : 0,
-                                 opts.limit, params);
+                                 undefined, params);
   console.log("testing on", data.length);
   console.log("feature size", data[0].input.length);
 

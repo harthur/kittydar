@@ -2,7 +2,6 @@ var fs = require("fs"),
     path = require("path"),
     nomnom = require("nomnom"),
     svm = require("svm"),
-    features = require("../../features"),
     utils = require("../../utils"),
     _ = require("underscore"),
     collect = require("../collect");
@@ -63,7 +62,7 @@ var combos = [
     cellSize: 4,
     blockSize: 2,
     blockStride: 1,
-    bins: 4,
+    bins: 6,
     norm: "L2"
   },
   svm: {

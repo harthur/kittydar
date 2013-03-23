@@ -2,7 +2,8 @@ var fs = require("fs"),
     path = require("path"),
     brain = require("brain"),
     nomnom = require("nomnom"),
-    features = require("../../features"),
+    params = require("./params"),
+    features = require("../features"),
     utils = require("../../utils")
     collect = require("../collect");
 
@@ -79,7 +80,7 @@ function mineNegatives() {
 }
 
 function testSample(file, canvas) {
-  var fts = features.extractFeatures(canvas);
+  var fts = features.extractFeatures(canvas, params.HOG);
   var result = network.run(fts);
 
   if (result >= opts.threshold) {

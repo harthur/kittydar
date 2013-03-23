@@ -2,7 +2,7 @@ var fs = require("fs"),
     path = require("path"),
     Canvas = require("canvas"),
     utils = require("../utils")
-    features = require("../features");
+    features = require("./features");
 
 exports.collectData = collectData;
 exports.extractSamples = extractSamples;

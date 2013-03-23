@@ -2,8 +2,9 @@ var fs = require("fs"),
     path = require("path"),
     svm = require("svm"),
     nomnom = require("nomnom"),
-    features = require("../../features"),
-    utils = require("../../utils")
+    params = require("./params"),
+    features = require("../features"),
+    utils = require("../../utils"),
     collect = require("../collect");
 
 var opts = nomnom.options({
@@ -62,6 +63,8 @@ function mineNegatives() {
     }
     catch (e) {
       console.log(e, file);
+      fs.unlinkSync(file);
+      console.log("deleted", file);
     }
     var samples = collect.extractSamples(canvas, opts.samples);
 
@@ -75,10 +78,9 @@ function mineNegatives() {
 }
 
 function testSample(file, canvas) {
-  var fts = features.extractFeatures(canvas);
+  var fts = features.extractFeatures(canvas, params.HOG);
 
   var result = SVM.predict([fts])[0];
-console.log(result);
 
   if (result == 1) {
     console.log("false positive", file);
