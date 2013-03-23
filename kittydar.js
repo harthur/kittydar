@@ -1,13 +1,10 @@
-var brain = require("brain"),
-    hog = require("hog-descriptor"),
-    nms = require("./nms");
+var hog = require("hog-descriptor"),
+    nms = require("./nms"),
+    nnOptions = require("./classifiers/nn-options");
 
 if (process.arch) {   // in node
   var Canvas = (require)('canvas');
 }
-
-var network = require("./network.js");
-var net = new brain.NeuralNetwork().fromJSON(network);
 
 var params = {
   patchSize: 48,       // size of training images in px
@@ -38,13 +35,13 @@ var params = {
     };
   }
 }
+// use the neural network backend
+extend(params, nnOptions);
 
 var kittydar = {
   detectCats: function(canvas, options) {
     if (options) {
-      for (var opt in options) {
-        params[opt] = options[opt];
-      }
+      extend(params, options);
     }
 
     // get canvases of the image at different scales
@@ -148,7 +145,7 @@ function resizeCanvas(canvas, width, height) {
   return resizeCanvas;
 }
 
-function createCanvas (width, height) {
+function createCanvas(width, height) {
   if (typeof Canvas !== 'undefined') {
     // have node-canvas
     return new Canvas(width, height);
@@ -162,5 +159,10 @@ function createCanvas (width, height) {
   }
 }
 
+function extend(object, extensions) {
+  for (ext in extensions) {
+    object[ext] = extensions[ext];
+  }
+}
 
 module.exports = kittydar;
