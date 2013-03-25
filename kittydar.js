@@ -1,6 +1,7 @@
 var hog = require("hog-descriptor"),
     nms = require("./nms"),
-    nnOptions = require("./classifiers/nn-options");
+    nnOptions = require("./classifiers/nn-options"),
+    svmOptions = require("./classifiers/svm-options");
 
 if (process.arch) {   // in node
   var Canvas = (require)('canvas');
@@ -35,13 +36,20 @@ var params = {
     };
   }
 }
-// use the neural network backend
-extend(params, nnOptions);
 
 var kittydar = {
   detectCats: function(canvas, options) {
     if (options) {
       extend(params, options);
+    }
+
+    if (options && options.classifier == "svm") {
+      // use the support vector machine as the classifier
+      extend(params, svmOptions);
+    }
+    else {
+      // use the neural network as the classifier
+      extend(params, nnOptions);
     }
 
     // get canvases of the image at different scales
