@@ -75,7 +75,7 @@ function testAll(combos) {
     var params = combos[i];
     var samples = opts.sample ? 1 : 0;
     var data = collect.collectData(opts.pos, opts.neg, samples,
-                                   opts.limit, params);
+                                   opts.limit, opts.limit, params);
 
     console.log("testing", i + 1 + ": " + JSON.stringify(params), "on " + data.length)
 

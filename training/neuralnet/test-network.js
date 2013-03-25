@@ -37,7 +37,7 @@ testNetwork();
 
 function testNetwork() {
   var data = collect.collectData(opts.pos, opts.neg, opts.sample ? 1 : 0, undefined,
-                                 params);
+                                 undefined, params);
   console.log("testing on", data.length);
 
   console.log("feature size", data[0].input.length);

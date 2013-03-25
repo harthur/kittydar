@@ -35,9 +35,13 @@ var opts = nomnom.options({
     help: "whether to sub-sample the negative images",
     hidden: true
   },
-  limit: {
+  posLimit: {
     default: 10000,
-    help: "maximum number of images to use from each directory"
+    help: "maximum number of positive images to use"
+  },
+  negLimit: {
+    default: 10000,
+    help: "maximum number of negative images to use"
   }
 }).colors().parse();
 
@@ -65,7 +69,7 @@ trainNetwork(params)
 function trainNetwork(params) {
   var samples = opts.sample ? 1 : 0;
   var data = collect.collectData(opts.pos, opts.neg, samples,
-                                 opts.limit, params);
+                                 opts.posLimit, opts.negLimit, params);
 
   console.log("training on", data.length);
   console.log("feature size:", data[0].input.length)
@@ -91,7 +95,7 @@ function trainNetwork(params) {
 
 function testNetwork(network) {
   var data = collect.collectData(opts.testPos, opts.testNeg, opts.sample ? 1 : 0,
-                                 undefined, params);
+                                 undefined, undefined, params);
   console.log("testing on", data.length);
   console.log("feature size", data[0].input.length);
 

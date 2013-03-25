@@ -35,9 +35,13 @@ var opts = nomnom.options({
     help: "whether to sub-sample the negative images",
     hidden: true
   },
-  limit: {
+  posLimit: {
     default: 10000,
-    help: "maximum number of images to use from each directory"
+    help: "maximum number of positive images to use"
+  },
+  negLimit: {
+    default: 10000,
+    help: "maximum number of negative images to use"
   }
 }).colors().parse();
 
@@ -61,7 +65,7 @@ trainSVM(params)
 function trainSVM(params) {
   var samples = opts.sample ? 1 : 0;
   var data = collect.collectData(opts.pos, opts.neg, samples,
-                                 opts.limit, params);
+                                 opts.posLimit, opts.negLimit, params);
 
   var inputs = [];
   var labels = [];
@@ -96,7 +100,7 @@ function trainSVM(params) {
 
 function testSVM(SVM) {
   var data = collect.collectData(opts.testPos, opts.testNeg, opts.sample ? 1 : 0,
-    undefined, params);
+                                 undefined, undefined, params);
 
   console.time("TEST")
   var truePos = 0, trueNeg = 0, falsePos = 0, falseNeg = 0;

@@ -17,17 +17,17 @@ exports.extractSamples = extractSamples;
  *  file: 'test.jpg'
  * }
  */
-function collectData(pos, neg, samples, limit, params) {
+function collectData(pos, neg, samples, posLimit, negLimit, params) {
   // number of samples to extract from each negative, 0 for whole image
   samples = samples || 0;
   params = params || {};
 
   var data = [];
   for (var i = 0; i < pos.length; i++) {
-    data = data.concat(getDir(pos[i], true, 0, limit, params));
+    data = data.concat(getDir(pos[i], true, 0, posLimit, params));
   }
   for (var i = 0; i < neg.length; i++) {
-    data = data.concat(getDir(neg[i], false, samples, limit, params));
+    data = data.concat(getDir(neg[i], false, samples, negLimit, params));
   }
 
   // randomize so neural network doesn't get biased toward one set
