@@ -1,7 +1,7 @@
 {
   "name": "kittydar",
   "description": "Cat detection",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "author": "Heather Arthur <fayearthur@gmail.com>",
   "repository": {
     "type": "git",
@@ -10,12 +10,14 @@
   "dependencies": {
     "canvas": "~1.0.1",
     "brain": "~0.6.0",
-    "hog-descriptor": "~0.4.0"
+    "hog-descriptor": "~0.5.0",
+    "svm": "~0.1.1"
   },
   "devDependencies": {
     "nomnom": "~1.5.2",
     "async": "~0.1.22",
-    "colors": "~0.6.0-1"
+    "colors": "~0.6.0-1",
+    "charm": "~0.1.1"
   },
   "main": "./kittydar"
 }
