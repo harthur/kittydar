@@ -27,5 +27,14 @@ module.exports =  [
   'c9eead403a8c11e19e4a12313813ffc0_7.jpg',   // ---- should work
   'e8f4da56d3c611e18ca012313806b840_7.jpg',   // not facing forward
   'be87b8a0721f11e1b9f1123138140926_7.jpg',   // head tilted
-  '812794549d2511e1a9f71231382044a1_7.jpg'    // not facing forward
+  '812794549d2511e1a9f71231382044a1_7.jpg',   // not facing forward
+  '219966284_4aa0a3c465.jpg',    // ---- should work
+  '2703668839_cfe0d6b154.jpg',   // kitten tilt
+  '474156503_d64e972df3.jpg',    // should work
+  '5929820421_b710bd97a4.jpg',   // tilt
+  '69375046_d06dc77299.jpg',     // not facing forward, tilt
+  '7023222_87b23bb0cd.jpg',      // ---- should work
+  '8591817645_14993744d2.jpg',   // ---- should work
+  '8593156480_03c3e57d50.jpg',   // ---- should work
+  '8593717742_9162f0ef34.jpg'    // ---- should work
   ];
