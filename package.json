@@ -11,13 +11,17 @@
     "canvas": "~1.0.1",
     "brain": "~0.6.0",
     "hog-descriptor": "~0.5.0",
-    "svm": "~0.1.1"
+    "svm": "~0.1.1",
+    "browserify": "~2.10.1",
+    "uglify-js": "~2.2.5"
   },
   "devDependencies": {
     "nomnom": "~1.5.2",
     "async": "~0.1.22",
     "colors": "~0.6.0-1",
-    "charm": "~0.1.1"
+    "charm": "~0.1.1",
+    "grunt": "~0.4.1",
+    "grunt-contrib-uglify": "~0.2.0"
   },
   "main": "./kittydar"
 }

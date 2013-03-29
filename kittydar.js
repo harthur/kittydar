@@ -4,7 +4,9 @@ var hog = require("hog-descriptor"),
     svmOptions = require("./classifiers/svm-options");
 
 if (process.arch) {   // in node
-  var Canvas = (require)('canvas');
+  // make sure browserify doesn't pick this require up
+  var require_ = require;
+  var Canvas = require_('canvas');
 }
 
 var params = {
