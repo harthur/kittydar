@@ -1,5 +1,5 @@
 importScripts(
-  "kittydar-0.1.1.js"
+  "kittydar-0.1.6.js"
 );
 
 onmessage = function(event) {
@@ -16,7 +16,7 @@ onmessage = function(event) {
     });
   });
 
-  cats = kittydar.combineOverlaps(cats, 0.25, 2);
+  cats = kittydar.combineOverlaps(cats, 0.25, 4);
 
   postMessage({ type: 'result', cats: cats });
 }

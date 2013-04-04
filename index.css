@@ -14,7 +14,7 @@ body {
 
 #subtitle, footer {
   font-family: Monaco, Menlo, Tahoma, sans-serif;
-  margin-top: 20px;
+  margin-top: 14px;
 }
 
 #container {
@@ -117,7 +117,7 @@ body {
 }
 
 footer {
-  margin-top: 100px;
+  margin-top: 80px;
   text-align: center;
   font-size: 13px;
   text-align: center;
@@ -144,6 +144,10 @@ footer a {
 
 #note {
   margin-top: 24px;
+}
+
+#limit-note {
+  font-style: italic;
 }
 
 #js-note {
