@@ -22,7 +22,7 @@ module.exports = {
   classify: function(features) {
     var output = net.runInput(features)[0];
     return {
-      isCat: output > 0.999,
+      isCat: output > 0.9998,
       value: output
     };
   }
