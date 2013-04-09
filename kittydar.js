@@ -62,7 +62,7 @@ var kittydar = {
       var kitties = kittydar.detectAtScale(resize.imagedata, resize.scale);
       cats = cats.concat(kitties);
     });
-    cats = nms.combineOverlaps(cats, params.overlapThresh, params.minOverlaps);
+    cats = this.combineOverlaps(cats, params.overlapThresh, params.minOverlaps);
 
     return cats;
   },
@@ -130,6 +130,11 @@ var kittydar = {
         }
       }
     }
+    return cats;
+  },
+
+  combineOverlaps: function(rects, overlapThresh, minOverlaps) {
+    cats = nms.combineOverlaps(rects, overlapThresh, minOverlaps);
     return cats;
   }
 }
