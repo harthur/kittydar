@@ -9,7 +9,14 @@ if (process.arch) {   // in node
   var Canvas = require_('canvas');
 }
 
-var params = {
+exports.Kittydar = Kittydar;
+
+exports.detectCats = function(canvas, options) {
+  var kittydar = new Kittydar(options);
+  return kittydar.detectCats(canvas);
+}
+
+var defaultParams = {
   patchSize: 48,       // size of training images in px
   minSize: 48,         // starting window size
   resize: 360,         // initial image resize size in px
@@ -26,7 +33,7 @@ var params = {
   },
   extractFeatures: function(imagedata, histograms) {
     // override if using another set of features
-    var descriptor = hog.extractHOGFromHistograms(histograms, params.HOGparams);
+    var descriptor = hog.extractHOGFromHistograms(histograms, this.HOGparams);
     return descriptor;
   },
   classify: function(features) {
@@ -39,30 +46,32 @@ var params = {
   }
 }
 
-var kittydar = {
-  detectCats: function(canvas, options) {
-    if (options) {
-      extend(params, options);
-    }
+function Kittydar(options) {
+  this.params = {};
+  extend(this.params, defaultParams);
+  extend(this.params, options);
 
-    if (options && options.classifier == "svm") {
-      // use the support vector machine as the classifier
-      extend(params, svmOptions);
-    }
-    else {
-      // use the neural network as the classifier
-      extend(params, nnOptions);
-    }
+  if (this.params.classifier == "svm") {
+    // use the support vector machine as the classifier
+    extend(this.params, svmOptions);
+  }
+  else {
+    // use the neural network as the classifier
+    extend(this.params, nnOptions);
+  }
+}
 
+Kittydar.prototype = {
+  detectCats: function(canvas) {
     // get canvases of the image at different scales
-    var resizes = this.getAllSizes(canvas, params.minSize);
+    var resizes = this.getAllSizes(canvas, this.params.minSize);
 
     var cats = [];
     resizes.forEach(function(resize) {
-      var kitties = kittydar.detectAtScale(resize.imagedata, resize.scale);
+      var kitties = this.detectAtScale(resize.imagedata, resize.scale);
       cats = cats.concat(kitties);
-    });
-    cats = this.combineOverlaps(cats, params.overlapThresh, params.minOverlaps);
+    }.bind(this));
+    cats = this.combineOverlaps(cats, this.params.overlapThresh, this.params.minOverlaps);
 
     return cats;
   },
@@ -71,14 +80,14 @@ var kittydar = {
     // For use with Worker threads, return canvas ImageDatas
     // resized to accomodate various window sizes
 
-    minSize = minSize || params.minSize;
+    minSize = minSize || this.params.minSize;
 
     // resize canvas to cut down on number of windows to check
     var max = Math.max(canvas.width, canvas.height)
-    var scale = Math.min(max, params.resize) / max;
+    var scale = Math.min(max, this.params.resize) / max;
 
     var resizes = [];
-    for (var size = minSize; size < max; size += params.scaleStep) {
+    for (var size = minSize; size < max; size += this.params.scaleStep) {
       var winScale = (minSize / size) * scale;
       var imagedata = this.scaleCanvas(canvas, winScale);
 
@@ -104,20 +113,20 @@ var kittydar = {
 
   detectAtScale: function(imagedata, scale) {
     // Detect using a sliding window of a fixed size.
-    var histograms = hog.extractHistograms(imagedata, params.HOGparams);
+    var histograms = hog.extractHistograms(imagedata, this.params.HOGparams);
     var cats = [];
 
     var width = imagedata.width,
         height = imagedata.height;
 
-    var size = params.patchSize;
-    var shift = params.shiftBy;
+    var size = this.params.patchSize;
+    var shift = this.params.shiftBy;
 
     for (var y = 0; y + size < height; y += shift) {
       for (var x = 0; x + size < width; x += shift) {
         var histRect = getRect(histograms, x / shift, y / shift, size / shift, size / shift);
-        var features = params.extractFeatures(imagedata, histRect);
-        var result = params.classify(features);
+        var features = this.params.extractFeatures(imagedata, histRect);
+        var result = this.params.classify(features);
 
         if (result.isCat) {
           cats.push({
@@ -179,5 +188,3 @@ function extend(object, extensions) {
     object[ext] = extensions[ext];
   }
 }
-
-module.exports = kittydar;
