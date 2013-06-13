@@ -141,8 +141,10 @@ var detector = {
       var worker = new Worker("detection-worker.js");
       worker.onmessage = this.onMessage;
       worker.onerror = this.onError;
-
+      var t1 = Date.now();
       var resizes = kittydar.getAllSizes(canvas);
+      var t2 = Date.now() - t1;
+      alert(t2 / 1000);
       worker.postMessage(resizes);
 
       this.worker = worker;
@@ -187,6 +189,7 @@ var detector = {
     }
     else if (data.type == 'result') {
       detector.paintCats(data.cats);
+      alert(data.time / 1000);
     }
   },
 

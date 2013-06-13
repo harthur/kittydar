@@ -6,8 +6,12 @@ onmessage = function(event) {
   var resizes = event.data;
 
   var cats = [];
+  var time = 0;
+  var t1 = Date.now();
   resizes.forEach(function(resize) {
+    var d1 = Date.now();
     var detected = kittydar.detectAtScale(resize.imagedata, resize.scale);
+    time += Date.now() - d1;
     cats = cats.concat(detected);
 
     postProgress({
@@ -18,7 +22,9 @@ onmessage = function(event) {
 
   cats = kittydar.combineOverlaps(cats, 0.25, 4);
 
-  postMessage({ type: 'result', cats: cats });
+  var totalTime = Date.now() - t1;
+
+  postMessage({ type: 'result', cats: cats , time: time});
 }
 
 function postProgress(progress) {

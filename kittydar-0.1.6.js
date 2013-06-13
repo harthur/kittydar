@@ -1038,7 +1038,7 @@ var svmjs = (function(exports){
       if(this.kernelType === "linear") {
 
         // load the weights!
-        this.w = new Float64Array(json.w);
+        this.w = new Array(json.w);
         this.usew_ = true;
         this.kernel = linearKernel; // this shouldn't be necessary
       }
@@ -1822,7 +1822,7 @@ NeuralNetwork.prototype = {
   formatData: function(data) {
     // turn sparse hash input into arrays with 0s as filler
     var datum = data[0].input;
-    if (!_(datum).isArray() && !(datum instanceof Float64Array)) {
+    if (!_(datum).isArray() && !(datum instanceof Array)) {
       if (!this.inputLookup) {
         this.inputLookup = lookup.buildLookup(_(data).pluck("input"));
       }
