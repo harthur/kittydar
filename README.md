@@ -46,7 +46,7 @@ There's lots of room for improvement, so fork and send requests.
 
 ## Propers
 
-* This informative reasearch paper: [Cat Head Detection - How to Effectively Exploit Shape and Texture Features](http://research.microsoft.com/pubs/80582/ECCV_CAT_PROC.pdf) by Weiwei Zhang, Jian Sun, and Xiaoou Tang.
+* This informative research paper: [Cat Head Detection - How to Effectively Exploit Shape and Texture Features](http://research.microsoft.com/pubs/80582/ECCV_CAT_PROC.pdf) by Weiwei Zhang, Jian Sun, and Xiaoou Tang.
 
 * This off the hook [dataset of cat images](http://137.189.35.203/WebUI/CatDatabase/catData.html) annotated with the locations of the cat's ears, eyes, and mouth.
 
