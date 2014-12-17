@@ -20,6 +20,9 @@ var opts = nomnom.options({
   }
 }).parse();
 
+// Change classifier to test here: "nn", "svm"
+var options = {classifier: "nn"};
+
 var truePos = 0;
 var falsePos = 0;
 var misses = [];
@@ -53,7 +56,8 @@ function runTest() {
 function printResults() {
   charm.cursor(true);
 
-  console.log("\n\ntrue positives:  ", truePos.toString().green);
+  console.log("\n\ntested with options", options);
+  console.log("\ntrue positives:  ", truePos.toString().green);
   console.log("false negatives: ", misses.length.toString().red);
   console.log("false positives: ", falsePos.toString().red);
 
@@ -101,7 +105,7 @@ function testImage(image, callback) {
       // todo: detect time
       var t1 = Date.now();
 
-      var cats = kittydar.detectCats(canvas);
+      var cats = kittydar.detectCats(canvas, options);
 
       time += Date.now() - t1;
 
