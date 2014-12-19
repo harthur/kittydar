@@ -107,3 +107,27 @@ function cropCanvas(canvas, x, y, width, height) {
   context.drawImage(canvas, x, y, width, height, 0, 0, width, height);
   return cropCanvas;
 }
+
+function getConvNetVol(canvas, toGrayscale) {
+  var data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+  var W = img.width;
+  var H = img.height;
+  var pixels = [];
+  for (var i = 0; i < data.length; i++) {
+    pixels.push(data[i] / 255 - 0.5); // normalize image pixels to [-0.5, 0.5]
+  }
+  var vol = new convnet.Vol(W, H, 4, 0); //input volume (image)
+  vol.w = pixels;
+
+  if (toGrayscale) {
+    // flatten into depth=1 array
+    var grayVol = new convnet.Vol(W, H, 1, 0);
+    for(var i = 0; i < W; i++) {
+      for(var j = 0; j < H; j++) {
+        grayVol.set(i, j, 0, vol.get(i, j, 0));
+      }
+    }
+    return grayVol;
+  }
+  return vol;
+}
