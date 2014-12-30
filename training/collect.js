@@ -1,11 +1,14 @@
 var fs = require("fs"),
     path = require("path"),
     Canvas = require("canvas"),
-    utils = require("../utils")
+    utils = require("../utils"),
+    convnet = require("convnetjs"),
     features = require("./features");
 
 exports.collectData = collectData;
 exports.extractSamples = extractSamples;
+
+var SIZE = 48;
 
 /*
  * Collect the canvas representations of the images in the positive and
@@ -58,18 +61,28 @@ function getDir(dir, isCat, samples, limit, params) {
       continue;
     }
 
+    // For negatives, we might sample the image multiple times
+    // For positives, samples=0
     var canvases = extractSamples(canvas, samples);
 
     for (var j = 0; j < canvases.length; j++) {
       var fts;
-      try {
-        fts = features.extractFeatures(canvases[j], params.HOG);
-      } catch(e) {
-        console.log("error extracting features", e, file);
-        continue;
+      if (params.getRawPixels) {
+        var trainingCanvas = utils.resizeCanvas(canvases[j], SIZE, SIZE);
+        fts = getConvNetVol(trainingCanvas, params.greyscalePixels);
       }
+      else {
+        try {
+          fts = features.extractFeatures(canvases[j], params.HOG);
+          fts = new Float64Array(fts)
+        } catch(e) {
+          console.log("error extracting features", e, file);
+          continue;
+        }
+      }
+
       data.push({
-        input: new Float64Array(fts),
+        input: fts,
         output: [isCat ? 1 : 0],
         file: file,
       });
@@ -108,10 +121,16 @@ function cropCanvas(canvas, x, y, width, height) {
   return cropCanvas;
 }
 
+/**
+ * For convolutional neural nets, the features we get from the data is
+ * just the raw pixels. Here we get the raw pixels in a format that
+ * the convnetjs library can understand.
+ */
 function getConvNetVol(canvas, toGrayscale) {
+  var ctx = canvas.getContext("2d");
   var data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-  var W = img.width;
-  var H = img.height;
+  var W = canvas.width;
+  var H = canvas.height;
   var pixels = [];
   for (var i = 0; i < data.length; i++) {
     pixels.push(data[i] / 255 - 0.5); // normalize image pixels to [-0.5, 0.5]
@@ -120,10 +139,9 @@ function getConvNetVol(canvas, toGrayscale) {
   vol.w = pixels;
 
   if (toGrayscale) {
-    // flatten into depth=1 array
     var grayVol = new convnet.Vol(W, H, 1, 0);
-    for(var i = 0; i < W; i++) {
-      for(var j = 0; j < H; j++) {
+    for (var i = 0; i < W; i++) {
+      for (var j = 0; j < H; j++) {
         grayVol.set(i, j, 0, vol.get(i, j, 0));
       }
     }
