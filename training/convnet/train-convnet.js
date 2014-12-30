@@ -5,6 +5,8 @@ var fs = require("fs"),
     utils = require("../../utils"),
     collect = require("../collect");
 
+var ITERS = 10;
+
 var opts = nomnom.options({
   pos: {
     abbr: 'p',
@@ -85,11 +87,17 @@ function trainWithData(network, data) {
   var trainer = new convnet.Trainer(network, {method: 'adadelta', l2_decay: 0.001,
                                     batch_size: 10});
   var stats;
-  for (var i = 0; i < data.length; i++) {
-    var vol = data[i].input;
-    var classification = data[i].output[0];
+  for (var iters = 0; iters < ITERS; iters++) {
+    var avloss = 0;
+    for (var i = 0; i < data.length; i++) {
+      var vol = data[i].input;
+      var classification = data[i].output[0];
 
-    stats = trainer.train(vol, classification);
+      stats = trainer.train(vol, classification);
+      avloss += stats.loss;
+    }
+    avloss /= data.length;
+    console.log("loss", stats.loss);
   }
   return stats;
 }
